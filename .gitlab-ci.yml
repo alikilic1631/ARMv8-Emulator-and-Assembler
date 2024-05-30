@@ -16,6 +16,7 @@ armv8_testsuite:
       paths:
         - armv8_testsuite/arm-gnu-toolchain-13.2.Rel1-x86_64-aarch64-none-elf/
   artifacts:
+    when: always
     paths:
       - armv8_testsuite/test/actual_results/
   script:
