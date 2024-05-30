@@ -1,0 +1,11 @@
+
+test/expected/test/test_cases/unit/str/str12_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	113b5610 	add	w16, w16, #0xed5
+   4:	91287273 	add	x19, x19, #0xa1c
+   8:	b8336a08 	str	w8, [x16, x19]
+   c:	8a000000 	and	x0, x0, x0

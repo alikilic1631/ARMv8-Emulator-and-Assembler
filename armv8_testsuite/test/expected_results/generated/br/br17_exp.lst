@@ -1,0 +1,14 @@
+
+test/expected/test/test_cases/unit/br/br17_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	d29ca40a 	mov	x10, #0xe520                	// #58656
+   4:	f2a0016a 	movk	x10, #0xb, lsl #16
+   8:	d280001b 	mov	x27, #0x0                   	// #0
+   c:	f2b1401b 	movk	x27, #0x8a00, lsl #16
+  10:	f800055b 	str	x27, [x10], #0
+  14:	d61f0140 	br	x10
+  18:	8a000000 	and	x0, x0, x0

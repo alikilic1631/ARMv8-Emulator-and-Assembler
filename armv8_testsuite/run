@@ -1,0 +1,35 @@
+#!/bin/sh
+
+# Run the server or commandline
+# Tries to run with the venv, else with python3
+
+RUN_SCRIPT="armv8suite.run_cli"
+SERVER="armv8server.app"
+
+
+run_server=False
+
+while getopts ":s" flag
+do
+    case "${flag}" in
+        s) run_server=True;
+            echo "Running Flask Server." ;
+            break;;
+        \?) break ;;
+        *) break ;;
+    esac
+done
+
+
+if [ -e .venv/bin/python3 ]
+then
+    . ./.venv/bin/activate
+fi
+
+
+if [ "$run_server" = True ]
+then
+    python3 -m flask --app ${SERVER} run
+else
+    python3 -m ${RUN_SCRIPT} $@
+fi

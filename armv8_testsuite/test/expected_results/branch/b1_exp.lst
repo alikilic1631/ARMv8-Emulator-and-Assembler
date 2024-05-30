@@ -1,0 +1,11 @@
+
+test/expected/test/test_cases/branch/b1_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	14000002 	b	0x8
+   4:	91003000 	add	x0, x0, #0xc
+   8:	91000400 	add	x0, x0, #0x1
+   c:	8a000000 	and	x0, x0, x0

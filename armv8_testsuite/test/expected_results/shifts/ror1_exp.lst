@@ -1,0 +1,12 @@
+
+test/expected/test/test_cases/shifts/ror1_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	d2824686 	mov	x6, #0x1234                	// #4660
+   4:	72b00006 	movk	w6, #0x8000, lsl #16
+   8:	f2d579a6 	movk	x6, #0xabcd, lsl #32
+   c:	2ac60c21 	orr	w1, w1, w6, ror #3
+  10:	8a000000 	and	x0, x0, x0

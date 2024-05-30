@@ -1,0 +1,14 @@
+
+test/expected/test/test_cases/general/ldr_lit02_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	58000060 	ldr	x0, 0xc
+   4:	58000081 	ldr	x1, 0x14
+   8:	14000004 	b	0x18
+   c:	0000000f 	udf	#15
+  10:	0000000a 	udf	#10
+  14:	0000000b 	udf	#11
+  18:	8a000000 	and	x0, x0, x0

@@ -1,0 +1,11 @@
+
+test/expected/test/test_cases/unit/bic/bic5_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	d12079ce 	sub	x14, x14, #0x81e
+   4:	51179a94 	sub	w20, w20, #0x5e6
+   8:	0a3401cf 	bic	w15, w14, w20
+   c:	8a000000 	and	x0, x0, x0

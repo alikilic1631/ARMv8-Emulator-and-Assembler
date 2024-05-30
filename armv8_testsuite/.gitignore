@@ -1,0 +1,18 @@
+solution
+__pycache__
+*.pyc
+*.o
+test/actual_results
+.venv
+tests/res/outfiles
+.vscode
+
+**/__pycache__/
+
+arm-gnu-toolchain-13.2.Rel1-x86_64-aarch64-none-elf
+
+# Dev stuff
+non_student/default_solution
+.pytest_cache
+.mypy_cache
+

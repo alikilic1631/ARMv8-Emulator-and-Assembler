@@ -1,0 +1,10 @@
+
+test/expected/test/test_cases/general/add06_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	91000400 	add	x0, x0, #0x1
+   4:	91000821 	add	x1, x1, #0x2
+   8:	8a000000 	and	x0, x0, x0

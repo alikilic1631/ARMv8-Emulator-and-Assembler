@@ -1,0 +1,35 @@
+<!--main page-->
+{% extends 'base.jinja' %}
+
+{% block content %}
+
+<!-- Choose Tests -->
+<div class="col-12">
+    <div class="card all-tests overflow-auto">
+        <div class="card-body">
+            <h5 class="card-title"><b> Please choose test for the {{fname}}.</b></h5>
+            <table class="table table-borderless datatable">
+                <thead>
+                    <tr>
+                        <th scope="col">Test Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {%for name in names %}
+                    <tr>
+                        <td>
+                            <a href= {{ routes.any_single(fname, name) }}>
+                                <span style="font-family:monospace">{{name}}</span>
+                            </a>
+                        </td>
+                    </tr>
+                    {%endfor%}
+                </tbody>
+            </table>
+
+        </div>
+
+    </div>
+</div><!-- End Choose Test -->
+
+{% endblock %}

@@ -1,0 +1,12 @@
+
+test/expected/test/test_cases/general/mov03_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	d28001e1 	mov	x1, #0xf                   	// #15
+   4:	d2801fe2 	mov	x2, #0xff                  	// #255
+   8:	d2801563 	mov	x3, #0xab                  	// #171
+   c:	d28019a4 	mov	x4, #0xcd                  	// #205
+  10:	8a000000 	and	x0, x0, x0

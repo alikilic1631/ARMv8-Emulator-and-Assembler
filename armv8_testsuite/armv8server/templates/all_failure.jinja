@@ -1,0 +1,71 @@
+<!--results page for all tests-->
+{% extends 'base.jinja' %}
+
+<!--
+Variables:
+    directory_error: bool
+
+    file_error: bool
+    files_missing: list[str]
+
+    exec_not_found: bool
+-->
+
+{% block content %}
+
+<!-- if test or solution directory are not found-->
+{% if directory_error %}
+<!-- Directory Error Card -->
+<div class="col-xxl-4 col-xl-12">
+    <div class="card info-card directory_error-card">
+        <div class="card-body">
+            <h5 class="card-title"><b style='color:red;'> Directory Not Found </b></h5>
+            <p> Please make sure that:
+            <ul>
+                <li> The /testserver/solution directory exists </li>
+                <li> The /testserver/test/test_cases directory exists. </li>
+                <li> The /testserver/test/expected_results directory exists. </li>
+            </ul>
+            </p>
+        </div>
+    </div>
+</div><!-- End Directory Error Card -->
+
+<!-- if files/tests are missing from ./tests directory-->
+{% elif file_error %}
+<!-- File Error Card -->
+<div class="col-xxl-4 col-xl-12">
+    <div class="card info-card directory_error-card">
+        <div class="card-body">
+            <h5 class="card-title"><b style='color:red;'> File(s) Not Found</b></h5>
+            <p> The files below are missing:
+            <ul>
+                {%for i in files_missing%}
+                <li>{{i}}</li>
+                {%endfor%}
+            </ul>
+            </p>
+            <p>Please download again the /testserver/test folder. </p>
+        </div>
+    </div>
+</div><!-- End File Error Card -->
+
+<!-- if run_tests.py returns an error-->
+{% elif emulator_error %}
+<!-- Execution Error Card -->
+<div class="col-xxl-4 col-xl-12">
+    <div class="card info-card directory_error-card">
+        <div class="card-body">
+            <h5 class="card-title"><b style='color:red;'> Executable Not Found</b></h5>
+            <p> The emulate executable was not found: <br>
+            <ul>
+                <li>Please, make sure that you have compiled your solution from the navigation bar.</li>
+                <li>Please, make sure that your emulator is implemented in an executable named emulate.</li>
+                <li>Please, make sure that your emulate executable is somewhere under /testserver/ directory</li>
+
+            </ul>
+            </p>
+        </div>
+    </div>
+</div><!-- End File Error Card -->
+{% endblock %}

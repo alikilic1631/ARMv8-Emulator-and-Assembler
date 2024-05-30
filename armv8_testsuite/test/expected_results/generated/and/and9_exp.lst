@@ -1,0 +1,11 @@
+
+test/expected/test/test_cases/unit/and/and9_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	5170d1ef 	sub	w15, w15, #0xc34, lsl #12
+   4:	514c137b 	sub	w27, w27, #0x304, lsl #12
+   8:	8a1b01f5 	and	x21, x15, x27
+   c:	8a000000 	and	x0, x0, x0

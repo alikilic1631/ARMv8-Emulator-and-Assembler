@@ -1,0 +1,10 @@
+
+test/expected/test/test_cases/general/tst05_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	d2800020 	mov	x0, #0x1                   	// #1
+   4:	ea00003f 	tst	x1, x0
+   8:	8a000000 	and	x0, x0, x0

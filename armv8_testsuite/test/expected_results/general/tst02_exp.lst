@@ -1,0 +1,14 @@
+
+test/expected/test/test_cases/general/tst02_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	f2800021 	movk	x1, #0x1
+   4:	f2800022 	movk	x2, #0x1
+   8:	ea02003f 	tst	x1, x2
+   c:	54000040 	b.eq	0x14  // b.none
+  10:	f2800063 	movk	x3, #0x3
+  14:	f2800084 	movk	x4, #0x4
+  18:	8a000000 	and	x0, x0, x0

@@ -1,0 +1,49 @@
+<!--main page-->
+{% extends 'base.jinja' %}
+
+{% block content %}
+
+<!-- Information Card -->
+<div class="col-xxl-12 col-xl-12">
+    <div class="card info-card manual-card">
+        <div class="card-body">
+            <h5 class="card-title"> <b>Welcome to the testing tool! </b> </h5>
+            <p> To test your implementation, please make sure that:
+            <ul>
+                <li> The <span style="font-family:monospace">./solution</span> directory exists. </li>
+                <li> The <span style="font-family:monospace">./solution</span> directory contains the <span style="font-family:monospace">assemble</span> and <span style="font-family:monospace">emulate</span>
+                    executables</li>
+                <li> The <span style="font-family:monospace">./test/test_cases</span> directory exists.</li>
+                <li> The <span style="font-family:monospace">./test/expected_results</span> directory exists.</li>
+            </ul>
+            </p>
+            <br>
+            <p> On the navigation bar you can::
+            <ul>
+                <li> Assemble Tests: test your assembler on all or on a specific test case.</li>
+                <li> Emulate Tests: test your emulator on all or on a sepcific test case.</li>
+                <li> Instruction Manual: view the instruction manual. </li>
+            </ul>
+            </p>
+
+            <br>
+            <p> When assembling/emulating, you will be prompted to another page that will display the results of your
+                assembler/emulator. The results can be one of the following:
+            <ul>
+                <li> CORRECT: assembler/emulator produced the correct result. </li>
+                <li> INCORRECT: assembler/emulator produced an incorrect result.</li>
+                <li> FAILED: assembler/emulator failed to assemble/emulate.</li>
+            </ul>
+            </p>
+            <br>
+            <p>Assembling/Emulating all the tests can take some time. </p>
+            <br>
+            <p> When assembling/emulating a specific test you will also be able to inspect the expected solution and the
+                solution that your assembler/emulator provided. </p>
+
+
+        </div>
+    </div>
+</div><!-- End Informaiton Card -->
+
+{% endblock %}

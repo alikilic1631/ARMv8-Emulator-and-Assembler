@@ -1,0 +1,10 @@
+
+test/expected/test/test_cases/unit/cmn/cmn1_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	d1113c84 	sub	x4, x4, #0x44f
+   4:	2b04037f 	cmn	w27, w4
+   8:	8a000000 	and	x0, x0, x0

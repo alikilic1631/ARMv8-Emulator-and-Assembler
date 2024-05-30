@@ -1,0 +1,10 @@
+
+test/expected/test/test_cases/unit/movn/movn2_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	51609ed6 	sub	w22, w22, #0x827, lsl #12
+   4:	9297ee56 	mov	x22, #0xffffffffffff408d    	// #-49011
+   8:	8a000000 	and	x0, x0, x0

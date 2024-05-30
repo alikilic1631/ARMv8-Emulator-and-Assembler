@@ -1,0 +1,11 @@
+
+test/expected/test/test_cases/unit/eor/eor18_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	d14618c6 	sub	x6, x6, #0x186, lsl #12
+   4:	914fe0a5 	add	x5, x5, #0x3f8, lsl #12
+   8:	cac5d8d8 	eor	x24, x6, x5, ror #54
+   c:	8a000000 	and	x0, x0, x0

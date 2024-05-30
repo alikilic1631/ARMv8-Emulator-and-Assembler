@@ -1,0 +1,13 @@
+
+test/expected/test/test_cases/shifts/asr2_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	d2824686 	mov	x6, #0x1234                	// #4660
+   4:	72b00006 	movk	w6, #0x8000, lsl #16
+   8:	f2d00006 	movk	x6, #0x8000, lsl #32
+   c:	f2f00006 	movk	x6, #0x8000, lsl #48
+  10:	aa860c21 	orr	x1, x1, x6, asr #3
+  14:	8a000000 	and	x0, x0, x0

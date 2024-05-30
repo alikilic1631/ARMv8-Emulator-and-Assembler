@@ -1,0 +1,138 @@
+<!--results page for all tests-->
+{% extends 'base.jinja' %}
+
+<!--
+Variables:
+    fname: string
+    test_is_correct: bool
+    expected_output: list
+    actual_output: list
+    test_type: string
+    output_name: string
+    log: list
+
+    diffs: list
+-->
+
+<!--body part-->
+{% block content %}
+
+<!-- Specific Test  Result -->
+<section class="section dashboard">
+    <div class="row">
+        <!-- Test Result Card -->
+        <div class="col-xxl-12 col-xl-12">
+            <div class="card info-card test-result-card">
+                <div class="card-body">
+                    <h5 class="card-title"> {{test_type}} test <span style="font-family:monospace">{{ fname }}</span>:
+                        {% if test_is_correct %}
+                        <b style="color:green"> CORRECT </b>
+                        {% else %}
+                        <b style="color:red"> INCORRECT </b>
+                        {% endif %}
+                    </h5>
+                </div>
+            </div>
+        </div>
+        <!-- End Test Result Card -->
+    </div>
+    <div class="row">
+
+        <!-- Expected Output Card -->
+        <div class="col-md-3 col-md-3">
+            <div class="card info-card expected_output-card">
+                <div class="card-body">
+                    <h5 class="card-title"> <b> Expected {{output_name}} </b></h5>
+                    <div class="d-flex align-items-center">
+                        <p>
+                            <code>
+                            {%for line in expected_output%}
+                            {{line}} <br>
+                            {%endfor%}
+                        </code>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Expected Output Card -->
+
+        <!-- Actual Output Card -->
+        <div class="col-md-3 col-md-3">
+            <div class="card info-card actual_output-card">
+                <div class="card-body">
+                    {% if results == "CORRECT" %}
+                    <h5 class="card-title"> <b style="color:green">
+                            {% else %}
+                            <h5 class="card-title"> <b style="color:red">
+                                    {% endif %}
+                                    Actual {{output_name}}
+                                </b> </h5>
+                            <div class="d-flex align-items-center">
+                                {% if results == "CORRECT" %}
+                                <p style="color:green">
+                                    {% else %}
+                                <p style="color:red">
+                                    {% endif %}
+                                    <code>
+                            {%for line in actual_output%}
+                            {{line}} <br>
+                            {%endfor%}
+                        </code>
+                                </p>
+
+                            </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Actual Output Card -->
+        <!-- End Expected Output Card -->
+        <div class="col-md-6 col-md-6">
+            <div class="card info-card diffs-card">
+                <div class="card-body">
+                    {% if log %}
+                    <h5 class="card-title"> <b> Log </b></h5>
+                    <div class="d-flex align-items-center">
+                        <p>
+                            <code>
+                            {%for line in log%}
+                            {{line}} <br>
+                            {%endfor%}
+                        </code>
+                        </p>
+                    </div>
+                    {% else %}
+                    {# <h5 class="card-title" style="text-align:center">(no log)</h5> #}
+                    <div style="text-align:center">
+                    <p style="text-align:center"> (no log) </p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <div class="row">
+        <!-- Expected Output Card -->
+        {% if not test_is_correct %}
+        <div class="col-md-6 col-md-6">
+            <div class="card info-card diffs-card">
+                <div class="card-body">
+                    <h5 class="card-title"> <b> Diffs </b></h5>
+                    <div class="d-flex align-items-center">
+                        <p>
+                            <code>
+                            {%for line in diffs%}
+                            {{line}} <br>
+                            {%endfor%}
+                        </code>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}

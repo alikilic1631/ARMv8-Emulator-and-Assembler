@@ -1,0 +1,10 @@
+
+test/expected/test/test_cases/unit/cmp/cmp9_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	9158c56b 	add	x11, x11, #0x631, lsl #12
+   4:	eb4bd05f 	cmp	x2, x11, lsr #52
+   8:	8a000000 	and	x0, x0, x0

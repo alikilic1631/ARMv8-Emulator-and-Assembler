@@ -1,0 +1,14 @@
+
+test/expected/test/test_cases/general/bne02_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	d2800021 	mov	x1, #0x1                   	// #1
+   4:	d2800042 	mov	x2, #0x2                   	// #2
+   8:	eb02003f 	cmp	x1, x2
+   c:	54000041 	b.ne	0x14  // b.any
+  10:	d2800063 	mov	x3, #0x3                   	// #3
+  14:	d2800084 	mov	x4, #0x4                   	// #4
+  18:	8a000000 	and	x0, x0, x0

@@ -1,0 +1,10 @@
+
+test/expected/test/test_cases/general/sub02_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	d2801fe1 	mov	x1, #0xff                  	// #255
+   4:	d103fc22 	sub	x2, x1, #0xff
+   8:	8a000000 	and	x0, x0, x0

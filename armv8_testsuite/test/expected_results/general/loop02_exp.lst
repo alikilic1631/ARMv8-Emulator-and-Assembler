@@ -1,0 +1,16 @@
+
+test/expected/test/test_cases/general/loop02_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	d28000a2 	mov	x2, #0x5                   	// #5
+   4:	d1000442 	sub	x2, x2, #0x1
+   8:	d2800141 	mov	x1, #0xa                   	// #10
+   c:	d1000421 	sub	x1, x1, #0x1
+  10:	eb02003f 	cmp	x1, x2
+  14:	54ffffc1 	b.ne	0xc  // b.any
+  18:	f100005f 	cmp	x2, #0x0
+  1c:	54ffff41 	b.ne	0x4  // b.any
+  20:	8a000000 	and	x0, x0, x0

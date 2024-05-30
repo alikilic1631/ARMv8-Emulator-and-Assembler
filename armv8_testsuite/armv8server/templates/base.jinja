@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  
+  <!-- Title Section-->
+  {% if title %}
+  <title> Testing - {{ title }} </title>
+  {% else %}
+    <title>ARMv8 Emulator/Assembler Test Platform </title>
+  {% endif %}
+
+  <!-- Vendor CSS Files -->
+  <link href="../static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../static/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="../static/vendor/simple-datatables/style.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="../static/css/style.css" rel="stylesheet">
+
+  <!-- =======================================================
+  * Template Name: NiceAdmin - v2.5.0
+  * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+</head>
+
+<body>
+
+  <!-- ======= Header ======= -->
+  <header id="header" class="header fixed-top d-flex align-items-center">
+
+    <!-- Logo -->
+    <div class="d-flex align-items-center justify-content-between">
+      <a href={{ routes.homepage }} class="logo d-flex align-items-center">
+        <span class="d-none d-lg-block">Test Platform</span>
+      </a>
+      <i class="bi bi-list toggle-sidebar-btn"></i>
+    </div><!-- End Logo -->
+    
+  </header><!-- End Header -->
+
+  <!-- ======= Sidebar ======= -->
+  <aside id="sidebar" class="sidebar">
+
+    <ul class="sidebar-nav" id="sidebar-nav">
+          <!-- Manual Nav-->
+      <li class="nav-item">
+        <a href={{ routes.homepage }} style="color:#012970;">
+          <b>Homepage</b>
+        </a>
+      </li><!-- End Manual Nav -->
+      <!-- Assemble Tests Nav-->
+      <li class="nav-item">
+          <b>Assembler Tests</b>
+        <ul id="forms-nav" class="nav-content">
+          <li>
+            <a href={{ routes.assemble_all }}>
+              <i class="bi bi-circle"></i><span>All</span>
+            </a>
+          </li> 
+          <li>
+            <a href={{ routes.find_test_assemble }}>
+              <i class="bi bi-circle"></i><span>Single</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      <!-- Emulate Tests Nav-->
+      <li class="nav-item">
+          <b>Emulator Tests</b>
+        <ul id="forms-nav" class="nav-content">
+          <li>
+            <a href={{ routes.emulate_all }}>
+              <i class="bi bi-circle"></i><span>All</span>
+            </a>
+          </li> 
+          <li>
+            <a href={{ routes.find_test_emulate }}>
+              <i class="bi bi-circle"></i><span>Single</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Assemble Tests Nav -->
+
+
+
+    </ul>
+
+  </aside><!-- End Sidebar-->
+
+  <!-- each page will have different body content-->
+  <main id="main" class="main">
+    {% block content %} {% endblock %}
+  </main>
+
+  <!-- ======= Footer ======= -->
+  <footer id="footer" class="footer">
+    <div class="copyright">
+      &copy; Copyright <strong><span>NiceAdmin</span></strong>. All Rights Reserved
+    </div>
+    <div class="credits">
+      <!-- All the links in the footer should remain intact. -->
+      <!-- You can delete the links only if you purchased the pro version. -->
+      <!-- Licensing information: https://bootstrapmade.com/license/ -->
+      <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->
+      Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+    </div>
+  </footer><!-- End Footer -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="../static/vendor/simple-datatables/simple-datatables.js"></script>
+  <script src="../static/vendor/tinymce/tinymce.min.js"></script>
+
+
+  <!-- Template Main JS File -->
+  <script src="../static/js/main.js"></script>
+
+</body>
+
+</html>

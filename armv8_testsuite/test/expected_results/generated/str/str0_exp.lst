@@ -1,0 +1,10 @@
+
+test/expected/test/test_cases/unit/str/str0_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	913954a5 	add	x5, x5, #0xe55
+   4:	b8096ca0 	str	w0, [x5, #150]!
+   8:	8a000000 	and	x0, x0, x0

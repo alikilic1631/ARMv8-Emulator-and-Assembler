@@ -1,0 +1,17 @@
+
+test/expected/test/test_cases/general/str03_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	d2800042 	mov	x2, #0x2                   	// #2
+   4:	d2800020 	mov	x0, #0x1                   	// #1
+   8:	d2800c61 	mov	x1, #0x63                  	// #99
+   c:	f9009001 	str	x1, [x0, #288]
+  10:	d2802420 	mov	x0, #0x121                 	// #289
+  14:	d1000442 	sub	x2, x2, #0x1
+  18:	f100005f 	cmp	x2, #0x0
+  1c:	f8001c01 	str	x1, [x0, #1]!
+  20:	54ffffa1 	b.ne	0x14  // b.any
+  24:	8a000000 	and	x0, x0, x0

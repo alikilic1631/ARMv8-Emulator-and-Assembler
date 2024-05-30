@@ -1,0 +1,11 @@
+
+test/expected/test/test_cases/unit/mul/mul5_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	1171e718 	add	w24, w24, #0xc79, lsl #12
+   4:	511b7718 	sub	w24, w24, #0x6dd
+   8:	1b187f06 	mul	w6, w24, w24
+   c:	8a000000 	and	x0, x0, x0

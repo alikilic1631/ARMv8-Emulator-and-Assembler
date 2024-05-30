@@ -1,0 +1,12 @@
+
+test/expected/test/test_cases/unit/madd/madd5_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	d1449f5a 	sub	x26, x26, #0x127, lsl #12
+   4:	91553ad6 	add	x22, x22, #0x54e, lsl #12
+   8:	11501f9c 	add	w28, w28, #0x407, lsl #12
+   c:	1b167351 	madd	w17, w26, w22, w28
+  10:	8a000000 	and	x0, x0, x0

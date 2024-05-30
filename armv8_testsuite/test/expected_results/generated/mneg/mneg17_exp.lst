@@ -1,0 +1,11 @@
+
+test/expected/test/test_cases/unit/mneg/mneg17_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	d13b4b39 	sub	x25, x25, #0xed2
+   4:	516bdb39 	sub	w25, w25, #0xaf6, lsl #12
+   8:	9b19ff39 	mneg	x25, x25, x25
+   c:	8a000000 	and	x0, x0, x0

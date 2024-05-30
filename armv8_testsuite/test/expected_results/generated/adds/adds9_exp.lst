@@ -1,0 +1,11 @@
+
+test/expected/test/test_cases/unit/adds/adds9_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	9110ef5a 	add	x26, x26, #0x43b
+   4:	91116e31 	add	x17, x17, #0x45b
+   8:	ab110355 	adds	x21, x26, x17
+   c:	8a000000 	and	x0, x0, x0

@@ -1,0 +1,1 @@
+STUDENT_MODE = True

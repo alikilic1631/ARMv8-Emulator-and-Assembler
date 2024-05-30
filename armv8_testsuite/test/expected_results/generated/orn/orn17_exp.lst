@@ -1,0 +1,11 @@
+
+test/expected/test/test_cases/unit/orn/orn17_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	1125fce7 	add	w7, w7, #0x97f
+   4:	d155fdad 	sub	x13, x13, #0x57f, lsl #12
+   8:	aa2d30f8 	orn	x24, x7, x13, lsl #12
+   c:	8a000000 	and	x0, x0, x0

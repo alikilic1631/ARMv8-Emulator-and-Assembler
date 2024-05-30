@@ -1,0 +1,38 @@
+#!/bin/sh
+
+reqs="requirements.txt"
+
+while getopts "d" flag
+do
+    case "${flag}" in
+        d) reqs="non_student/requirements-dev.txt";
+            echo "Installing dev dependencies.";;
+    esac
+done
+
+# Checking for pip
+python3 -c "import pip" > /dev/null
+if [ $? -ne 0 ]; then
+    echo "pip3 not found. Installing."
+    wget https://bootstrap.pypa.io/get-pip.py -O /tmp/get-pip.py
+    python3 /tmp/get-pip.py --user
+    python3 -c "import pip"
+    which pip3 > /dev/null
+    if [ $? -ne 0 ]; then
+        echo "pip3 install failed. Aborting."
+        exit 1
+    fi
+    ehco "pip3 binary installed at:"
+    which pip3
+fi
+
+# Setup venv to be able to run the server
+echo "Setup venv"
+python3 -m venv .venv
+echo "Install dependencies"
+. ./.venv/bin/activate
+echo $reqs
+python3 -m pip install -r $reqs
+deactivate
+echo "Install completed."
+echo "Remember to activate the venv before running the server."

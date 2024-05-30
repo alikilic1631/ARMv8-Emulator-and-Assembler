@@ -1,0 +1,13 @@
+
+test/expected/test/test_cases/unit/bcond/bcond4_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	9144f7a6 	add	x6, x29, #0x13d, lsl #12
+   4:	eb1d00df 	cmp	x6, x29
+   8:	5400004c 	b.gt	0x10
+   c:	9132bd8c 	add	x12, x12, #0xcaf
+  10:	911f3d8c 	add	x12, x12, #0x7cf
+  14:	8a000000 	and	x0, x0, x0

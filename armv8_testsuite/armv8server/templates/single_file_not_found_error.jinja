@@ -1,0 +1,24 @@
+<!--results page for all tests-->
+{% extends 'base.jinja' %}
+
+<!--
+Variables:
+    fname: string
+
+-->
+
+<!--body part-->
+{% block content %}
+
+<div class="col-l-4 col-l-4">
+    <div class="card info-card directory_error-card">
+        <div class="card-body">
+            <h5 class="card-title"><b style='color:red;'> Test file <span style="font-family:monospace">{{fname}}</span> not found. </b></h5>
+            <p>
+                Ensure the file <span style="font-family:monospace">{{fname}}</span> is in the <span style="font-family:monospace">test_cases/</span> directory.
+            </p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

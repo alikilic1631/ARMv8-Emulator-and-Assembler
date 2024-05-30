@@ -1,0 +1,9 @@
+
+test/expected/test/test_cases/unit/subs/subs0_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	717ca875 	subs	w21, w3, #0xf2a, lsl #12
+   4:	8a000000 	and	x0, x0, x0

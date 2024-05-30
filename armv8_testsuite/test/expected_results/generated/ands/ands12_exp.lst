@@ -1,0 +1,11 @@
+
+test/expected/test/test_cases/unit/ands/ands12_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	d145756b 	sub	x11, x11, #0x15d, lsl #12
+   4:	1133f7de 	add	w30, w30, #0xcfd
+   8:	ea1e0168 	ands	x8, x11, x30
+   c:	8a000000 	and	x0, x0, x0

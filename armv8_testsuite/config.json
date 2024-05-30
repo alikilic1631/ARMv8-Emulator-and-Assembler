@@ -1,0 +1,6 @@
+{
+  "paths": {
+    "assembler": "../src/assemble",
+    "emulator": "../src/emulate"
+  }
+}

@@ -1,0 +1,62 @@
+<!--results page for all tests-->
+{% extends 'base.jinja' %}
+
+<!--
+Variables:
+    fname: string
+
+    exec_failed_error: bool
+    log: list
+    test_type_verb: string
+
+    json_decode_error: bool
+    json_decode_error_msg: string
+
+    generic_error: bool
+    generic_error_msg: string
+-->
+
+<!--body part-->
+{% block content %}
+
+<!-- Executable failed -->
+<!-- Execution Error Card -->
+<div class="col-xl-12 col-xl-12">
+    <div class="card info-card directory_error-card">
+        <div class="card-body">
+            <h5 class="card-title"><b style='color:red;'> Test <span style="font-family:monospace">{{test_type_verb.capitalize()}} {{fname}}</span> failed.  </b></h5>
+            <p>
+                {% if json_decode_error %}
+                Internal Error: JSON Decoding failed. <br>
+                <code>
+                {%for line in json_decode_error_msg%}
+                    {{line}} <br>
+                {%endfor%}
+                </code>
+                
+                {% elif exec_failed_error %}
+                Log: <br>
+                <code>
+                {%for line in log%}
+                    {{line}} <br>
+                {%endfor%}
+                </code>
+
+                {% elif generic_error %}
+                Test failed with Exception: <br>
+                <code>
+                {%for line in generic_error_msg%}
+                    {{line}} <br>
+                {%endfor%}
+                </code>
+                
+                {% else %}
+                {%raise Exception("Invalid error type")%}
+                {% endif %}
+            </p>
+        </div>
+    </div>
+</div>
+<!-- End Execution Error Card -->
+
+{% endblock %}

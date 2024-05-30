@@ -1,0 +1,12 @@
+
+test/expected/test/test_cases/unit/msub/msub3_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	d16f73de 	sub	x30, x30, #0xbdc, lsl #12
+   4:	911e8b39 	add	x25, x25, #0x7a2
+   8:	1162cdef 	add	w15, w15, #0x8b3, lsl #12
+   c:	1b19bfc7 	msub	w7, w30, w25, w15
+  10:	8a000000 	and	x0, x0, x0

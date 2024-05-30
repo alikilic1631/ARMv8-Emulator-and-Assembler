@@ -1,0 +1,10 @@
+
+test/expected/test/test_cases/unit/movz/movz3_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	1102cfde 	add	w30, w30, #0xb3
+   4:	52a7683e 	mov	w30, #0x3b410000            	// #994115584
+   8:	8a000000 	and	x0, x0, x0

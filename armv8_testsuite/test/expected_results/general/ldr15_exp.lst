@@ -1,0 +1,11 @@
+
+test/expected/test/test_cases/general/ldr15_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	d2800021 	mov	x1, #0x1                   	// #1
+   4:	91000c21 	add	x1, x1, #0x3
+   8:	f9400423 	ldr	x3, [x1, #8]
+   c:	8a000000 	and	x0, x0, x0

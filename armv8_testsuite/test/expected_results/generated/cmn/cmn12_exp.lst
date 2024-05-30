@@ -1,0 +1,9 @@
+
+test/expected/test/test_cases/unit/cmn/cmn12_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	312b54df 	cmn	w6, #0xad5
+   4:	8a000000 	and	x0, x0, x0

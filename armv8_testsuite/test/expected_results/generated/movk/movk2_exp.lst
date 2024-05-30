@@ -1,0 +1,10 @@
+
+test/expected/test/test_cases/unit/movk/movk2_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	517f77de 	sub	w30, w30, #0xfdd, lsl #12
+   4:	f2858f1e 	movk	x30, #0x2c78
+   8:	8a000000 	and	x0, x0, x0

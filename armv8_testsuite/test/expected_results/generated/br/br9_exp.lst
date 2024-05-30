@@ -1,0 +1,14 @@
+
+test/expected/test/test_cases/unit/br/br9_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	d299ed2d 	mov	x13, #0xcf69                	// #53097
+   4:	f2a0016d 	movk	x13, #0xb, lsl #16
+   8:	d280001a 	mov	x26, #0x0                   	// #0
+   c:	f2b1401a 	movk	x26, #0x8a00, lsl #16
+  10:	f80005ba 	str	x26, [x13], #0
+  14:	d61f01a0 	br	x13
+  18:	8a000000 	and	x0, x0, x0

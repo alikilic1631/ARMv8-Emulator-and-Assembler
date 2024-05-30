@@ -1,0 +1,11 @@
+
+test/expected/test/test_cases/unit/eon/eon7_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	510c1231 	sub	w17, w17, #0x304
+   4:	915ad5ad 	add	x13, x13, #0x6b5, lsl #12
+   8:	caed7637 	eon	x23, x17, x13, ror #29
+   c:	8a000000 	and	x0, x0, x0

@@ -1,0 +1,36 @@
+<!--results page for all tests-->
+{% extends 'base.jinja' %}
+
+<!--
+Variables:
+    directory_error: boolean
+    directory_name: string
+
+    executable_not_found: boolean
+    executable_name: string
+
+-->
+
+<!--body part-->
+{% block content %}
+
+<div class="col-xxl-12 col-xl-12">
+    <div class="card info-card directory_error-card">
+        <div class="card-body">
+            {% if executable_not_found %}
+            <h5 class="card-title"><b style='color:red;'> Executable Not Found</b></h5>
+            <p> The <span style="font-family:monospace">{{executable_name}}</span> executable was not found. <br>
+                Ensure the <span style="font-family:monospace">{{executable_name}}</span> executable is in the <span style="font-family:monospace">solution/</span> directory.
+            </p>
+
+            {% elif directory_error %}
+            <h5 class="card-title"><b style='color:red;'> Directory {{directory_name}} not found. </b></h5>
+            <p>
+                Ensure the directory <span style="font-family:monospace">{{directory_name}}</span> is present.
+            </p>
+            {%endif%}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

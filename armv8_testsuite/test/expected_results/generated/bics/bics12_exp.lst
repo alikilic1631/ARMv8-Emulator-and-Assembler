@@ -1,0 +1,11 @@
+
+test/expected/test/test_cases/unit/bics/bics12_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	11043631 	add	w17, w17, #0x10d
+   4:	515a3652 	sub	w18, w18, #0x68d, lsl #12
+   8:	6a32022b 	bics	w11, w17, w18
+   c:	8a000000 	and	x0, x0, x0

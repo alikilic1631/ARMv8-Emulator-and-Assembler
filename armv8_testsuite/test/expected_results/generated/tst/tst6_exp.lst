@@ -1,0 +1,11 @@
+
+test/expected/test/test_cases/unit/tst/tst6_exp.bin:     file format binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	1113b5ad 	add	w13, w13, #0x4ed
+   4:	51000210 	sub	w16, w16, #0x0
+   8:	ea50b1bf 	tst	x13, x16, lsr #44
+   c:	8a000000 	and	x0, x0, x0

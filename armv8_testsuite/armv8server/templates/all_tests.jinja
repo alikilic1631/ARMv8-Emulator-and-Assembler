@@ -1,0 +1,79 @@
+<!--results page for all tests-->
+{% extends 'base.jinja' %}
+
+<!--
+Variables:
+    num_cor: int
+    num_inc: int
+    num_fail: int
+    total_tests: int
+
+    files: list[string]
+    results: list[string]
+
+    link_portion: string
+-->
+
+<!--body part-->
+{% block content %}
+
+<!-- Emulate All Tests -->
+<div class="col-12">
+    <div class="card all-tests overflow-auto">
+        <div class="card-body">
+            <h5 class="card-title">
+                <b style='color:green;'>{{ num_cor }} </b> <b>/</b>
+                <b style='color:orange;'>{{ num_inc }} </b> <b>/</b>
+                <b style='color:red;'>{{ num_fail }}</b>
+            </h5>
+            <div class="row">
+            <div class="col">
+                <b> {{ num_cor }}/{{ total_tests }} CORRECT. </b><br>
+                <b>{{ num_inc }}/{{ total_tests }} INCORRECT. </b><br>
+                <b>{{ num_fail }}/{{ total_tests }} FAILED. </b>
+            </div>
+            <div class="col">
+            {% if num_cor == total_tests and total_tests >= 594 %}
+                <b style='color:green;'>All tests passed</b><br>
+                <img src="https://media.tenor.com/M63nflRRzgMAAAAC/rjumen-laugh-man.gif" 
+                alt="Epic!" width="290" height="60"/>
+            {% elif num_cor == total_tests %}
+                <b style='color:green;'>All tests passed, but some missing...</b>
+            {% else %}
+                <b style='color:red;'>Some tests failed</b>
+            {% endif %}
+            </div>
+            <div class="col">
+            <form method="post" action= {{ routes.any_all(link_portion) }}>
+                <input type="submit" name="run_all_button" value="Run All Tests">
+            </form>
+            </div>
+            </div>
+            <table class="table table-borderless datatable">
+                <thead>
+                    <tr>
+                        <th scope="col">Test Name</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {%for i in range(0,results|length) %}
+                    <tr>
+                        <td><a href="{{ routes.any_single(link_portion, files[i]) }}" style="font-family:monospace"> {{files[i]}} </a></td>
+                        {%if results[i] == "CORRECT" %}
+                        <td><span class="badge bg-success">CORRECT</span></td>
+                        {%elif results[i] == "INCORRECT" %}
+                        <td><span class="badge bg-warning">INCORRECT</span></td>
+                        {%elif results[i] == "FAIL" %}
+                        <td><span class="badge bg-danger">FAILED</span></td>
+                        {%endif%}
+                    </tr>
+                    {%endfor%}
+                </tbody>
+            </table>
+
+        </div>
+
+    </div>
+</div><!-- End Emulate All Tests -->
+{% endblock %}
