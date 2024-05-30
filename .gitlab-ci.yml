@@ -5,7 +5,7 @@ armv8_testsuite:
   stage: test
   image:
     name: python
-    entrypoint: ["/bin/bash", "-l", "-c"]
+    entrypoint: [""]
   cache:
     - key:
         files:
