@@ -104,13 +104,13 @@ bool emulstep(emulstate *state)
   switch (op0)
   {
   case 0x8:
-  case 0x9:
+  case 0x9: // Data Proccessing Immediate
     if (!exec_dpimm_instr(state, instr))
       unknown_instr(instr);
     state->pc += INSTR_SIZE;
     break;
   case 0x5:
-  case 0xd:
+  case 0xd: // Data Proccessing Register
     if (!exec_dpreg_instr(state, instr))
       unknown_instr(instr);
     state->pc += INSTR_SIZE;
@@ -118,13 +118,13 @@ bool emulstep(emulstate *state)
   case 0x4:
   case 0x6:
   case 0xc:
-  case 0xe:
+  case 0xe: // Loads and Stores
     if (!exec_sdt_instr(state, instr))
       unknown_instr(instr);
     state->pc += INSTR_SIZE;
     break;
   case 0xa:
-  case 0xb:
+  case 0xb: // Branches
     if (!exec_branch_instr(state, instr))
       unknown_instr(instr);
     // Branch instructions update PC directly
