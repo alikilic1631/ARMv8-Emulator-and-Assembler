@@ -12,12 +12,14 @@
 
 typedef unsigned long ulong;
 
+// Print unknown instruction error message and exit
 static void unknown_instr(ulong instr)
 {
   fprintf(stderr, "Error: Unrecognized instruction 0x%04lx\n", instr);
   exit(1);
 }
 
+// Create a new emulator state with default values
 emulstate make_emulstate()
 {
   emulstate state;
@@ -37,6 +39,7 @@ emulstate make_emulstate()
   return state;
 }
 
+// Print emulator state to file
 void fprint_emulstate(FILE *fout, emulstate *state)
 {
   // Registers
@@ -85,9 +88,10 @@ void fprint_emulstate(FILE *fout, emulstate *state)
   }
 }
 
+// Execute a single emulation step
 bool emulstep(emulstate *state)
 {
-  // convert little-endian memory to raw instruction
+  // Convert little-endian memory to raw instruction
   ulong instr = 0;
   for (int idx = 0; idx < INSTR_SIZE; idx++)
   {
@@ -135,6 +139,7 @@ bool emulstep(emulstate *state)
   return true;
 }
 
+// Utility function to get a range from a ulong. Useful for unpacking an instruction.
 ulong get_value(ulong from, int offset, int size)
 {
   // ull required since it might overflow by 1 bit
@@ -142,6 +147,7 @@ ulong get_value(ulong from, int offset, int size)
   return (from & mask) >> offset;
 }
 
+// Utility function to set a register value, and correct for 32/64 bit mode.
 void set_reg(emulstate *state, bool sf, char rg, ullong value)
 {
   if (sf)
@@ -150,6 +156,8 @@ void set_reg(emulstate *state, bool sf, char rg, ullong value)
   }
   else
   {
+    // Only first 32 bits of register are set, rest remain unchanged?
+    // TODO: Verify this, they might actually be zeroed.
     state->regs[(int)rg] = (state->regs[(int)rg] & 0xffffffff00000000) | (value & 0xffffffff);
   }
 }
