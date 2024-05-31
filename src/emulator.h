@@ -9,6 +9,7 @@ typedef unsigned char byte;
 typedef unsigned int uint;
 typedef unsigned long ulong;
 typedef unsigned long long ullong;
+typedef long long llong;
 
 typedef struct
 {
@@ -37,4 +38,13 @@ extern bool emulstep(emulstate *state);
 extern ulong get_value(ulong from, uint offset, uint size);
 // Utility function to set a register value, and correct for 32/64 bit mode.
 extern void set_reg(emulstate *state, bool sf, byte rg, ullong value);
+// Utility function to get a register value, and correct for 32/64 bit mode.
+extern ullong get_reg(emulstate *state, bool sf, byte rg);
+// Utility function to load a value from memory, and correct for 32/64 bit mode.
+// If 32-bit, rest of ullong is zeroed out.
+extern ullong load_mem(emulstate *state, bool sf, ulong address);
+// Utility function to store a value to memory, and correct for 32/64 bit mode.
+extern void store_mem(emulstate *state, bool sf, ulong address, ullong value);
+// Utility function sign extend a ulong.
+extern ulong sign_extend(ulong n, int sign_bit);
 #endif

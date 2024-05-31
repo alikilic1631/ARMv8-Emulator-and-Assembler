@@ -89,12 +89,7 @@ void fprint_emulstate(FILE *fout, emulstate *state)
 // Execute a single emulation step
 bool emulstep(emulstate *state)
 {
-  // Convert little-endian memory to raw instruction
-  ulong instr = 0;
-  for (int idx = 0; idx < INSTR_SIZE; idx++)
-  {
-    instr |= (ulong)(state->memory[state->pc + idx]) << (idx * 8);
-  }
+  ulong instr = load_mem(state, false, state->pc);
   // Custom HALT instruction (spec 1.9)
   if (instr == 0x8a000000)
     return false;
@@ -157,4 +152,52 @@ void set_reg(emulstate *state, bool sf, byte rg, ullong value)
     // TODO: Verify this, they might actually be zeroed.
     state->regs[(int)rg] = (state->regs[(int)rg] & 0xffffffff00000000) | (value & 0xffffffff);
   }
+}
+
+ullong get_reg(emulstate *state, bool sf, byte rg)
+{
+  if (sf)
+  {
+    return state->regs[(int)rg];
+  }
+  else
+  {
+    return state->regs[(int)rg] & 0xffffffff;
+  }
+}
+
+ullong load_mem(emulstate *state, bool sf, ulong address)
+{
+  int size = 4;
+  if (sf)
+    size = 8;
+  // Convert little-endian memory to ullong
+  ullong data = 0;
+  for (int idx = 0; idx < size; idx++)
+  {
+    data |= (ullong)(state->memory[address + idx]) << (idx * 8);
+  }
+  return data;
+}
+
+void store_mem(emulstate *state, bool sf, ulong address, ullong value)
+{
+  int size = 4;
+  if (sf)
+    size = 8;
+  // Convert ullong to little-endian memory
+  for (int idx = 0; idx < size; idx++)
+  {
+    state->memory[address + idx] = (value >> (idx * 8)) & 0xff;
+  }
+}
+
+ulong sign_extend(ulong n, int sign_bit)
+{
+  if (n & (1 << sign_bit))
+  {
+    // (ulong)(-1) gets all 1s with correct length of ulong
+    n |= (ulong)(-1) << (sign_bit + 1);
+  }
+  return n;
 }
