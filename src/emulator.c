@@ -10,9 +10,6 @@
 #define MEMORY_BLOCKS 4
 #define INSTR_SIZE 4
 
-typedef unsigned long ulong;
-typedef unsigned int uint;
-
 // Print unknown instruction error message and exit
 static void unknown_instr(ulong instr)
 {

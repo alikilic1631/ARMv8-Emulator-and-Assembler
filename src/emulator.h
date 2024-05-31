@@ -6,6 +6,7 @@
 #ifndef EMULATOR_H
 #define EMULATOR_H
 typedef unsigned char byte;
+typedef unsigned int uint;
 typedef unsigned long ulong;
 typedef unsigned long long ullong;
 
@@ -33,7 +34,7 @@ extern void fprint_emulstate(FILE *stream, emulstate *state);
 extern bool emulstep(emulstate *state);
 
 // Utility function to get a range from a ulong. Useful for unpacking an instruction.
-extern ulong get_value(ulong from, int offset, int size);
+extern ulong get_value(ulong from, uint offset, uint size);
 // Utility function to set a register value, and correct for 32/64 bit mode.
-extern void set_reg(emulstate *state, bool sf, char rg, ullong value);
+extern void set_reg(emulstate *state, bool sf, byte rg, ullong value);
 #endif
