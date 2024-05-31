@@ -11,9 +11,10 @@
 #define INSTR_SIZE 4
 
 // Print unknown instruction error message and exit
-static void unknown_instr(ulong instr)
+static void unknown_instr(emulstate *state, ulong instr)
 {
-  fprintf(stderr, "Error: Unrecognized instruction 0x%04lx\n", instr);
+  fprintf(stderr, "Error: Unrecognized instruction 0x%08lx\nState Dump:\n", instr);
+  fprint_emulstate(stderr, state);
   exit(1);
 }
 
@@ -26,7 +27,7 @@ emulstate make_emulstate()
   state.pstate.zero = true; // (spec 1.1.1 - "initial value of PSTATE has the Z flag set")
   state.pstate.carry = false;
   state.pstate.overflow = false;
-  for (int i = 0; i < GENERAL_REGS; i++)
+  for (int i = 0; i <= GENERAL_REGS; i++)
   {
     state.regs[i] = 0;
   }
@@ -89,12 +90,7 @@ void fprint_emulstate(FILE *fout, emulstate *state)
 // Execute a single emulation step
 bool emulstep(emulstate *state)
 {
-  // Convert little-endian memory to raw instruction
-  ulong instr = 0;
-  for (int idx = 0; idx < INSTR_SIZE; idx++)
-  {
-    instr |= (ulong)(state->memory[state->pc + idx]) << (idx * 8);
-  }
+  ulong instr = load_mem(state, false, state->pc);
   // Custom HALT instruction (spec 1.9)
   if (instr == 0x8a000000)
     return false;
@@ -106,13 +102,13 @@ bool emulstep(emulstate *state)
   case 0x8:
   case 0x9:
     if (!exec_dpimm_instr(state, instr))
-      unknown_instr(instr);
+      unknown_instr(state, instr);
     state->pc += INSTR_SIZE;
     break;
   case 0x5:
   case 0xd:
     if (!exec_dpreg_instr(state, instr))
-      unknown_instr(instr);
+      unknown_instr(state, instr);
     state->pc += INSTR_SIZE;
     break;
   case 0x4:
@@ -120,17 +116,17 @@ bool emulstep(emulstate *state)
   case 0xc:
   case 0xe:
     if (!exec_sdt_instr(state, instr))
-      unknown_instr(instr);
+      unknown_instr(state, instr);
     state->pc += INSTR_SIZE;
     break;
   case 0xa:
   case 0xb:
     if (!exec_branch_instr(state, instr))
-      unknown_instr(instr);
+      unknown_instr(state, instr);
     // Branch instructions update PC directly
     break;
   default:
-    unknown_instr(instr);
+    unknown_instr(state, instr);
   }
 
   return true;
@@ -157,4 +153,57 @@ void set_reg(emulstate *state, bool sf, byte rg, ullong value)
     // TODO: Verify this, they might actually be zeroed.
     state->regs[(int)rg] = (state->regs[(int)rg] & 0xffffffff00000000) | (value & 0xffffffff);
   }
+}
+
+ullong get_reg(emulstate *state, bool sf, byte rg)
+{
+  if (rg >= GENERAL_REGS)
+  {
+    fprintf(stderr, "Error: Out of bounds register number %d\n", rg);
+    exit(1);
+  }
+  if (sf)
+  {
+    return state->regs[(int)rg];
+  }
+  else
+  {
+    return state->regs[(int)rg] & 0xffffffff;
+  }
+}
+
+ullong load_mem(emulstate *state, bool sf, ulong address)
+{
+  int size = 4;
+  if (sf)
+    size = 8;
+  // Convert little-endian memory to ullong
+  ullong data = 0;
+  for (int idx = 0; idx < size; idx++)
+  {
+    data |= (ullong)(state->memory[address + idx]) << (idx * 8);
+  }
+  return data;
+}
+
+void store_mem(emulstate *state, bool sf, ulong address, ullong value)
+{
+  int size = 4;
+  if (sf)
+    size = 8;
+  // Convert ullong to little-endian memory
+  for (int idx = 0; idx < size; idx++)
+  {
+    state->memory[address + idx] = (value >> (idx * 8)) & 0xff;
+  }
+}
+
+ulong sign_extend(ulong n, int sign_bit)
+{
+  if (n & (1 << sign_bit))
+  {
+    // (ulong)(-1) gets all 1s with correct length of ulong
+    n |= (ulong)(-1) << (sign_bit + 1);
+  }
+  return n;
 }
