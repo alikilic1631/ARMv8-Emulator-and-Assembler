@@ -37,6 +37,14 @@ bool exec_sdt_instr(emulstate *state, ulong raw)
     {
       // Unsigned offset
       ulong imm12 = get_value(raw, 10, 12);
+      if (sf)
+      {
+        imm12 *= 8;
+      }
+      else
+      {
+        imm12 *= 4;
+      }
       addr = get_reg(state, sf, xn) + imm12;
       addr_set = true;
     }
@@ -64,8 +72,6 @@ bool exec_sdt_instr(emulstate *state, ulong raw)
   {
     // Literal Address
     long simm19 = sign_extend(get_value(raw, 5, 19), 18);
-    // TODO : Does this become *8 when 64-bit? I thought that's what
-    //        the spec (1.7.1) says, but tests broke...
     addr = state->pc + simm19 * 4;
     addr_set = true;
   }

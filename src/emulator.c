@@ -11,9 +11,10 @@
 #define INSTR_SIZE 4
 
 // Print unknown instruction error message and exit
-static void unknown_instr(ulong instr)
+static void unknown_instr(emulstate *state, ulong instr)
 {
-  fprintf(stderr, "Error: Unrecognized instruction 0x%04lx\n", instr);
+  fprintf(stderr, "Error: Unrecognized instruction 0x%08lx\nState Dump:\n", instr);
+  fprint_emulstate(stderr, state);
   exit(1);
 }
 
@@ -26,7 +27,7 @@ emulstate make_emulstate()
   state.pstate.zero = true; // (spec 1.1.1 - "initial value of PSTATE has the Z flag set")
   state.pstate.carry = false;
   state.pstate.overflow = false;
-  for (int i = 0; i < GENERAL_REGS; i++)
+  for (int i = 0; i <= GENERAL_REGS; i++)
   {
     state.regs[i] = 0;
   }
@@ -101,13 +102,13 @@ bool emulstep(emulstate *state)
   case 0x8:
   case 0x9:
     if (!exec_dpimm_instr(state, instr))
-      unknown_instr(instr);
+      unknown_instr(state, instr);
     state->pc += INSTR_SIZE;
     break;
   case 0x5:
   case 0xd:
     if (!exec_dpreg_instr(state, instr))
-      unknown_instr(instr);
+      unknown_instr(state, instr);
     state->pc += INSTR_SIZE;
     break;
   case 0x4:
@@ -115,17 +116,17 @@ bool emulstep(emulstate *state)
   case 0xc:
   case 0xe:
     if (!exec_sdt_instr(state, instr))
-      unknown_instr(instr);
+      unknown_instr(state, instr);
     state->pc += INSTR_SIZE;
     break;
   case 0xa:
   case 0xb:
     if (!exec_branch_instr(state, instr))
-      unknown_instr(instr);
+      unknown_instr(state, instr);
     // Branch instructions update PC directly
     break;
   default:
-    unknown_instr(instr);
+    unknown_instr(state, instr);
   }
 
   return true;
@@ -156,6 +157,11 @@ void set_reg(emulstate *state, bool sf, byte rg, ullong value)
 
 ullong get_reg(emulstate *state, bool sf, byte rg)
 {
+  if (rg >= GENERAL_REGS)
+  {
+    fprintf(stderr, "Error: Out of bounds register number %d\n", rg);
+    exit(1);
+  }
   if (sf)
   {
     return state->regs[(int)rg];

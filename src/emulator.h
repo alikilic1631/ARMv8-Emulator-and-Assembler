@@ -22,7 +22,7 @@ typedef struct
 typedef struct
 {
     byte memory[MAX_MEMORY];
-    ullong regs[GENERAL_REGS];
+    ullong regs[GENERAL_REGS + 1]; // last is 0 register
     ullong pc;
     pstate_t pstate;
     // reg sp; // (spec 1.1 - "stack pointer can be ignored for this exercise")
