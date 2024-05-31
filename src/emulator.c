@@ -11,6 +11,7 @@
 #define INSTR_SIZE 4
 
 typedef unsigned long ulong;
+typedef unsigned int uint;
 
 // Print unknown instruction error message and exit
 static void unknown_instr(ulong instr)
@@ -140,7 +141,7 @@ bool emulstep(emulstate *state)
 }
 
 // Utility function to get a range from a ulong. Useful for unpacking an instruction.
-ulong get_value(ulong from, int offset, int size)
+ulong get_value(ulong from, uint offset, uint size)
 {
   // ull required since it might overflow by 1 bit
   ulong mask = (1ull << (offset + size)) - (1ul << offset);
@@ -148,7 +149,7 @@ ulong get_value(ulong from, int offset, int size)
 }
 
 // Utility function to set a register value, and correct for 32/64 bit mode.
-void set_reg(emulstate *state, bool sf, char rg, ullong value)
+void set_reg(emulstate *state, bool sf, byte rg, ullong value)
 {
   if (sf)
   {
