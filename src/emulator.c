@@ -101,7 +101,6 @@ bool emulstep(emulstate *state)
 
   // Extract op0 to determine exec instruction structure
   char op0 = (instr >> 25) & 0xf;
-  printf("%d\n", op0);
   switch (op0)
   {
   case 0x8:
