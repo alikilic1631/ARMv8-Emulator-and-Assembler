@@ -115,7 +115,7 @@ bool emulstep(emulstate *state)
   case 0x6:
   case 0xc:
   case 0xe: // Loads and Stores
-    if (!exec_sdt_instr(state, instr))
+    if (!exec_sdt_instr(state, instr)) // DONE
       unknown_instr(state, instr);
     state->pc += INSTR_SIZE;
     break;
