@@ -2,15 +2,15 @@
 #include <stdint.h>
 #include "instr_dpimm.h"
 
-#define arith_instr 0b010
-#define wide_move_instr 0b101
-#define ADD 0b00
-#define ADDS 0b01
-#define SUB 0b10
-#define SUBS 0b11
-#define MOVN 0b00
-#define MOVZ 0b10
-#define MOVK 0b11
+#define arith_instr 2
+#define wide_move_instr 5
+#define ADD 0
+#define ADDS 1
+#define SUB 2
+#define SUBS 3
+#define MOVN 0
+#define MOVZ 2
+#define MOVK 3
 
 void set_pstate_flags(emulstate *state, bool sf, ullong result, ullong rn, ullong op2, bool add)
 {
