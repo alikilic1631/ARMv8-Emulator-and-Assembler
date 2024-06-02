@@ -51,16 +51,14 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
   ullong rm_value = get_reg(state, sf, rm_addr);
 
   // Define operation
-  // bool arithmetic = (opr & ARITHMETIC_TEST) == ARITHMETIC_EXPECTED;
-  // bool bit_logic = (opr & BIT_LOGIC_TEST) == BIT_LOGIC_TEST;
-  // bool multiply = (opr & MULTIPLY_TEST) == MULTIPLY_EXPECTED;
-  bool is_arithmetic = 0;
+  bool arithmetic = (opr & ARITHMETIC_TEST) == ARITHMETIC_EXPECTED;
+  bool bit_logic = (opr & BIT_LOGIC_TEST) == BIT_LOGIC_TEST;
+  bool multiply = (opr & MULTIPLY_TEST) == MULTIPLY_EXPECTED;
 
   if (!M)
   {
     byte shift = get_value(opr, 1, 2);
     bool N = get_value(opr, 0, 1);
-    is_arithmetic = get_value(shift, 3, 1);
 
     switch (shift)
     {
@@ -122,7 +120,7 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
         // }
         break;
       case 3:
-        if (is_arithmetic)
+        if (!bit_logic)
         {
           return false;
         }
@@ -169,14 +167,14 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
         break;
     }
 
-    if (!is_arithmetic & N) 
+    if (bit_logic & N) 
     {
       rm_value = ~rm_value;
     }
 
     set_reg(state, sf, rm_addr, rm_value);
 
-    if (!is_arithmetic)
+    if (bit_logic)
     {
       switch (opc)
       {
@@ -208,7 +206,7 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
         break;
       }
     }
-    else if (is_arithmetic)
+    else if (arithmetic)
     {
       switch (opc)
       {
@@ -300,7 +298,7 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
       }
     }
   }
-  else if (M)
+  else if (M & multiply)
   {
     bool x = get_value(operand , 6, 1);
     byte ra_addr = get_value(operand, 0, 5);
