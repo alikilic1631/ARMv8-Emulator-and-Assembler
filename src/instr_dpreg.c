@@ -183,11 +183,11 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
         rd_value = rn_value & rm_value;
         if (sf) 
         {
-          state->pstate.negative = rd_value >> 63;
+          state->pstate.negative = (rd_value >> 63) == 1;
         }
         else 
         {
-          state->pstate.negative = rd_value >> 31;
+          state->pstate.negative = (rd_value >> 31) == 1;
         }
         state->pstate.zero = rd_value == 0;
         state->pstate.carry = 0;
@@ -209,11 +209,11 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
         rd_value = rn_value + rm_value;
         if (sf) 
         {
-          state->pstate.negative = rd_value >> 63;
+          state->pstate.negative = (rd_value >> 63) == 1;
         }
         else 
         {
-          state->pstate.negative = rd_value >> 31;
+          state->pstate.negative = (rd_value >> 31) == 1;
         }
         state->pstate.zero = rd_value == 0;
         state->pstate.carry = rd_value < rn_value;
@@ -250,11 +250,11 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
         rd_value = rn_value - rm_value;
         if (sf) 
         {
-          state->pstate.negative = rd_value >> 63;
+          state->pstate.negative = (rd_value >> 63) == 1;
         }
         else 
         {
-          state->pstate.negative = rd_value >> 31;
+          state->pstate.negative = (rd_value >> 31) == 1;
         }
         state->pstate.zero = rd_value == 0;
         state->pstate.carry = rd_value > rn_value;
