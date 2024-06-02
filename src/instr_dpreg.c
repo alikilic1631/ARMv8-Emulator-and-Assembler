@@ -71,7 +71,15 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
         //set_reg(state, sf, rm_addr, rm_value);
         break;
       case 2:
-        bool MSB = rm_value < 0;
+        bool MSB = 0;
+        if (sf) 
+        {
+          MSB = (rm_value >> 63) == 1;
+        }
+        else
+        {
+          MSB = (rm_value >> 31) == 1;
+        }
         for (int i = 0; i < operand; i++) 
         {
           rm_value >>= 1;
@@ -294,7 +302,7 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
   {
     bool x = get_value(operand , 6, 1);
     byte ra_addr = get_value(operand, 0, 5);
-    byte ra_value = get_reg(state, sf, ra_addr);
+    ullong ra_value = get_reg(state, sf, ra_addr);
 
     if (x)
     {
