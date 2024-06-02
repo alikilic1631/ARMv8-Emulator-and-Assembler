@@ -159,12 +159,12 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
         break;
     }
 
-    set_reg(state, sf, rm_addr, rm_value);
-
     if (bit_logic & N) 
     {
       rm_value = ~rm_value;
     }
+
+    set_reg(state, sf, rm_addr, rm_value);
 
     if (bit_logic)
     {
@@ -181,7 +181,14 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
         break;
       case 3:
         rd_value = rn_value & rm_value;
-        state->pstate.negative = rd_value < 0;
+        if (sf) 
+        {
+          state->pstate.negative = rd_value >> 63;
+        }
+        else 
+        {
+          state->pstate.negative = rd_value >> 31;
+        }
         state->pstate.zero = rd_value == 0;
         state->pstate.carry = 0;
         state->pstate.overflow = 0;
@@ -200,7 +207,14 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
         break;
       case 1:
         rd_value = rn_value + rm_value;
-        state->pstate.negative = rd_value < 0;
+        if (sf) 
+        {
+          state->pstate.negative = rd_value >> 63;
+        }
+        else 
+        {
+          state->pstate.negative = rd_value >> 31;
+        }
         state->pstate.zero = rd_value == 0;
         state->pstate.carry = rd_value < rn_value;
         state->pstate.overflow = 0;
@@ -234,7 +248,14 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
         break;
       case 3:
         rd_value = rn_value - rm_value;
-        state->pstate.negative = rd_value < 0;
+        if (sf) 
+        {
+          state->pstate.negative = rd_value >> 63;
+        }
+        else 
+        {
+          state->pstate.negative = rd_value >> 31;
+        }
         state->pstate.zero = rd_value == 0;
         state->pstate.carry = rd_value > rn_value;
         state->pstate.overflow = 0;
