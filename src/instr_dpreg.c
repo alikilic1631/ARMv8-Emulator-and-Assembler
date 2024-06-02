@@ -150,6 +150,8 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
       rm_value = ~rm_value;
     }
 
+    set_reg(state, sf, rm_addr, rm_value);
+
     if (bit_logic)
     {
       switch (opc)
