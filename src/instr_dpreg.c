@@ -28,7 +28,7 @@
 // 0b1 << 31
 #define MSB_32BIT_MASK 2147483648
 // 0b1 << 63  
-#define MSB_64BIT_MASK 9223372036854775807
+#define MSB_64BIT_MASK 0x8000000000000000
 
 bool exec_dpreg_instr(emulstate *state, ulong raw)
 {
@@ -77,7 +77,14 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
           rm_value >>= 1;
           if (MSB) 
           {
-            rm_value = -rm_value;
+            if (sf)
+            {
+              rm_value |= MSB_64BIT_MASK;
+            }
+            else 
+            {
+              rm_value |= MSB_32BIT_MASK;
+            }
           }
         }
         //set_reg(state, sf, rm_addr, rm_value);
@@ -116,7 +123,14 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
           rm_value >>= 1;
           if (LSB)
           {
-            rm_value = -rm_value;
+            if (sf)
+            {
+              rm_value |= MSB_64BIT_MASK;
+            }
+            else 
+            {
+              rm_value |= MSB_32BIT_MASK;
+            }
           }
         }
         //set_reg(state, sf, rm_addr, rm_value);
