@@ -32,11 +32,11 @@
 
 bool exec_dpreg_instr(emulstate *state, ulong raw)
 {
-  byte reg_indicator = get_value(raw, 25, 3);
-  if ((reg_indicator & DP_REG_TEST) != DP_REG_EXPECTED)
-  {
-    return false;
-  }
+  // byte reg_indicator = get_value(raw, 25, 3);
+  // if ((reg_indicator & DP_REG_TEST) != DP_REG_EXPECTED)
+  // {
+  //   return false;
+  // }
 
   bool sf = get_value(raw, 31, 1);
   bool M = get_value(raw, 28, 1);
@@ -46,9 +46,9 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
   byte operand = get_value(raw, 10, 6);
   byte opr = get_value(raw, 21, 4);
   byte opc = get_value(raw, 29, 2);
-  signed char rd_value = get_reg(state, sf, rd_addr);
-  signed char rn_value = get_reg(state, sf, rn_addr);
-  signed char rm_value = get_reg(state, sf, rm_addr);
+  byte rd_value = get_reg(state, sf, rd_addr);
+  byte rn_value = get_reg(state, sf, rn_addr);
+  byte rm_value = get_reg(state, sf, rm_addr);
 
   // Define operation
   bool arithmetic = (opr & ARITHMETIC_TEST) == ARITHMETIC_EXPECTED;
