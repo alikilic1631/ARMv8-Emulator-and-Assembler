@@ -46,9 +46,9 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
   byte operand = get_value(raw, 10, 6);
   byte opr = get_value(raw, 21, 4);
   byte opc = get_value(raw, 29, 2);
-  byte rd_value = get_reg(state, sf, rd_addr);
-  byte rn_value = get_reg(state, sf, rn_addr);
-  byte rm_value = get_reg(state, sf, rm_addr);
+  ullong rd_value = get_reg(state, sf, rd_addr);
+  ullong rn_value = get_reg(state, sf, rn_addr);
+  ullong rm_value = get_reg(state, sf, rm_addr);
 
   // Define operation
   bool arithmetic = (opr & ARITHMETIC_TEST) == ARITHMETIC_EXPECTED;
