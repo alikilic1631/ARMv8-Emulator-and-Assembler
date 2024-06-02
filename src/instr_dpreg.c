@@ -159,12 +159,12 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
         break;
     }
 
+    set_reg(state, sf, rm_addr, rm_value);
+
     if (bit_logic & N) 
     {
       rm_value = ~rm_value;
     }
-
-    set_reg(state, sf, rm_addr, rm_value);
 
     if (bit_logic)
     {
@@ -187,6 +187,7 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
         state->pstate.overflow = 0;
         break;
       default:
+        return false;
         break;
       }
     }
