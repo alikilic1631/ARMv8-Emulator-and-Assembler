@@ -33,7 +33,7 @@
 bool exec_dpreg_instr(emulstate *state, ulong raw)
 {
   byte reg_indicator = get_value(raw, 25, 3);
-  if (reg_indicator & DP_REG_TEST != DP_REG_EXPECTED)
+  if ((reg_indicator & DP_REG_TEST) != DP_REG_EXPECTED)
   {
     return false;
   }
@@ -51,9 +51,9 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
   byte rm_value = get_reg(state, sf, rm_addr);
 
   // Define operation
-  bool arithmetic = opr & ARITHMETIC_TEST == ARITHMETIC_EXPECTED;
-  bool bit_logic = opr & BIT_LOGIC_TEST == BIT_LOGIC_TEST;
-  bool multiply = opr & MULTIPLY_TEST == MULTIPLY_EXPECTED;
+  bool arithmetic = (opr & ARITHMETIC_TEST) == ARITHMETIC_EXPECTED;
+  bool bit_logic = (opr & BIT_LOGIC_TEST) == BIT_LOGIC_TEST;
+  bool multiply = (opr & MULTIPLY_TEST) == MULTIPLY_EXPECTED;
 
   if (!M)
   {
@@ -187,7 +187,7 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
         state->pstate.zero = rd_value == 0;
         state->pstate.carry = rd_value < rn_value;
         state->pstate.overflow = 0;
-        if (((rn_value ^ rm_value) >= 0) & (rn_value ^ rd_value < 0))
+        if (((rn_value ^ rm_value) >= 0) & ((rn_value ^ rd_value) < 0))
         {
           state->pstate.overflow = 1;
         }
@@ -221,7 +221,7 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
         state->pstate.zero = rd_value == 0;
         state->pstate.carry = rd_value > rn_value;
         state->pstate.overflow = 0;
-        if (((rn_value ^ rm_value) < 0) & (rn_value ^ rd_value < 0))
+        if (((rn_value ^ rm_value) < 0) & ((rn_value ^ rd_value) < 0))
         {
           state->pstate.overflow = 1;
         }
@@ -258,17 +258,13 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
     byte ra_addr = get_value(operand, 0, 5);
     byte ra_value = get_reg(state, sf, ra_addr);
 
-    switch (x)
+    if (x)
     {
-    case 0:
-      rd_value = ra_value + (rn_value * rm_value);
-      break;
-    case 1:
       rd_value = ra_value - (rn_value * rm_value);
-      break;
-    default:
-      return false;
-      break;
+    }
+    else 
+    {
+      rd_value = ra_value + (rn_value * rm_value);
     }
   }
 
