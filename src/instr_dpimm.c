@@ -56,6 +56,7 @@ bool exec_dpimm_instr(emulstate *state, ulong raw)
       {
         set_reg(state, sf, rd, result);
       }
+      return true;
       break;
     case ADDS:
       result = rn_val + imm12;
@@ -64,6 +65,7 @@ bool exec_dpimm_instr(emulstate *state, ulong raw)
         set_reg(state, sf, rd, result);
       }
       set_pstate_flags(state, sf, result, rn_val, operand, true); // update condition flags
+      return true;
       break;
     case SUB:
       result = rn_val - imm12;
@@ -71,14 +73,16 @@ bool exec_dpimm_instr(emulstate *state, ulong raw)
       {
           set_reg(state, sf, rd, result);
       }
+      return true;
       break;
     case SUBS:
-      result = rn_val - operand;
+      result = rn_val - imm12;
       if (rd != 31) 
       {
           set_reg(state, sf, rd, result);
       }
       set_pstate_flags(state, sf, result, rn_val, operand, false);
+      return true;
       break;
     default:
       return false;
@@ -99,12 +103,14 @@ bool exec_dpimm_instr(emulstate *state, ulong raw)
       {
           set_reg(state, sf, rd, operand);
       }
+      return true;
       break;
     case MOVZ:
       if (rd != 31) 
       {
         set_reg(state, sf, rd, operand);
       }
+      return true;
       break;
     case MOVK:
       if (rd != 31) 
@@ -116,6 +122,7 @@ bool exec_dpimm_instr(emulstate *state, ulong raw)
         rd_val |= (imm16 << shift); // (rd_val & ~mask) | (imm16 << shift)
         set_reg(state, sf, rd, rd_val);
       }
+      return true;
       break;
     default:
       return false;
