@@ -61,6 +61,7 @@ bool exec_sdt_instr(emulstate *state, ulong raw)
       long simm9 = sign_extend(get_value(raw, 12, 9), 8);
       bool I = get_value(raw, 11, 1);
       addr = get_reg(state, sf, xn);
+      set_reg(state, sf, xn, addr + simm9);
       if (I)
       {
         addr += simm9;
