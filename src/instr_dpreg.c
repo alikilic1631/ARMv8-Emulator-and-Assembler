@@ -32,11 +32,6 @@
 
 bool exec_dpreg_instr(emulstate *state, ulong raw)
 {
-  // byte reg_indicator = get_value(raw, 25, 3);
-  // if ((reg_indicator & DP_REG_TEST) != DP_REG_EXPECTED)
-  // {
-  //   return false;
-  // }
 
   bool sf = get_value(raw, 31, 1);
   bool M = get_value(raw, 28, 1);
@@ -60,16 +55,20 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
     byte shift = get_value(opr, 1, 2);
     bool N = get_value(opr, 0, 1);
 
+    // Shifts
     switch (shift)
     {
+      // LSL
       case 0:
         rm_value <<= operand;
         //set_reg(state, sf, rm_addr, rm_value);
         break;
+      // LSR
       case 1:
         rm_value >>= operand;
         //set_reg(state, sf, rm_addr, rm_value);
         break;
+      // ASR
       case 2:
         bool MSB = 0;
         if (sf) 
@@ -95,30 +94,8 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
             }
           }
         }
-        //set_reg(state, sf, rm_addr, rm_value);
-        // if (sf) 
-        // {
-        //   bool MSB = rm >> 63;
-        //   for (int i = 0; i < operand; i++) 
-        //   {
-        //     rm >>= 1;
-        //     if (MSB) {
-        //       rm |= MSB_64BIT_MASK;
-        //     }
-        //   }
-        // }
-        // else 
-        // {
-        //   bool MSB = rm >> 31;
-        //   for (int j = 0; j < operand; j++) 
-        //   {
-        //     rm >>= 1;
-        //     if (MSB) {
-        //       rm |= MSB_32BIT_MASK;
-        //     }
-        //   }
-        // }
         break;
+      // ROR
       case 3:
         if (!bit_logic)
         {
@@ -141,32 +118,13 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
             }
           }
         }
-        //set_reg(state, sf, rm_addr, rm_value);
-        // if (bit_logic)
-        // {
-        //   for (int i = 0; i < operand; i++) 
-        //   {
-        //     bool LSB = rm_value & LSB_MASK;
-        //     rm >>= 1;
-        //     if (LSB) 
-        //     {
-        //       if (sf) 
-        //       {
-        //         rm |= MSB_64BIT_MASK;
-        //       }
-        //       else
-        //       {
-        //         rm |= MSB_32BIT_MASK;
-        //       }
-        //     }
-        //   }
-        // }
         break;
       default:
         return false;
         break;
     }
 
+    // Checking N
     if (bit_logic & N) 
     {
       rm_value = ~rm_value;
@@ -178,15 +136,19 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
     {
       switch (opc)
       {
+      // and
       case 0:
         rd_value = rn_value & rm_value;
         break;
+      // or
       case 1:
         rd_value = rn_value | rm_value;
         break;
+      // xor
       case 2:
         rd_value = rn_value ^ rm_value;
         break;
+      // and (setting flags)
       case 3:
         rd_value = rn_value & rm_value;
         if (sf) 
@@ -210,9 +172,11 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
     {
       switch (opc)
       {
+      // add
       case 0:
         rd_value = rn_value + rm_value;
         break;
+      // add (setting flags)
       case 1:
         rd_value = rn_value + rm_value;
         if (sf) 
@@ -230,30 +194,12 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
         {
           state->pstate.overflow = 1;
         }
-        // if (sf)
-        // {
-        //   if ((rn_value >> 63 == rm_value >> 63) & (rn_value >> 63 != rd_value >> 63)) {
-        //     state->pstate.overflow = 1;
-        //   }
-        //   else
-        //   {
-        //     state->pstate.carry = 0;
-        //   }
-        // }
-        // else
-        // {
-        //   if ((rn_value >> 31 == rm_value >> 31) & (rn_value >> 31 != rd_value >> 31)) {
-        //     state->pstate.overflow = 1;
-        //   }
-        //   else
-        //   {
-        //     state->pstate.carry = 0;
-        //   }
-        // }
         break;
+      // subtract
       case 2:
         rd_value = rn_value - rm_value;
         break;
+      // subtract (setting flags)
       case 3:
         rd_value = rn_value - rm_value;
         if (sf) 
@@ -271,26 +217,6 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
         {
           state->pstate.overflow = 1;
         }
-        // if (sf)
-        // {
-        //   if ((rn_value >> 63 != rm_value >> 63) & (rn_value >> 63 != rd_value >> 63)) {
-        //     state->pstate.overflow = 1;
-        //   }
-        //   else
-        //   {
-        //     state->pstate.carry = 0;
-        //   }
-        // }
-        // else
-        // {
-        //   if ((rn_value >> 31 != rm_value >> 31) & (rn_value >> 31 != rd_value >> 31)) {
-        //     state->pstate.overflow = 1;
-        //   }
-        //   else
-        //   {
-        //     state->pstate.carry = 0;
-        //   }
-        // }
         break;
       default:
         return false;
@@ -304,10 +230,12 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
     byte ra_addr = get_value(operand, 0, 5);
     ullong ra_value = get_reg(state, sf, ra_addr);
 
+    // multiply-subtract
     if (x)
     {
       rd_value = ra_value - (rn_value * rm_value);
     }
+    // multiply - add
     else 
     {
       rd_value = ra_value + (rn_value * rm_value);
