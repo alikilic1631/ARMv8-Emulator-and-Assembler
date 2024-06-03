@@ -52,38 +52,22 @@ bool exec_dpimm_instr(emulstate *state, ulong raw)
     {
     case ADD:
       result = rn_val + imm12;
-      if (rd != 31)
-      {
-        set_reg(state, sf, rd, result);
-      }
+      set_reg(state, sf, rd, result);
       return true;
-      break;
     case ADDS:
       result = rn_val + imm12;
-      if (rd != 31)
-      {
-        set_reg(state, sf, rd, result);
-      }
+      set_reg(state, sf, rd, result);
       set_pstate_flags(state, sf, result, rn_val, operand, true); // update condition flags
       return true;
-      break;
     case SUB:
       result = rn_val - imm12;
-      if (rd != 31) 
-      {
-          set_reg(state, sf, rd, result);
-      }
+      set_reg(state, sf, rd, result);
       return true;
-      break;
     case SUBS:
       result = rn_val - imm12;
-      if (rd != 31) 
-      {
-          set_reg(state, sf, rd, result);
-      }
+      set_reg(state, sf, rd, result);
       set_pstate_flags(state, sf, result, rn_val, operand, false);
       return true;
-      break;
     default:
       return false;
     }
@@ -99,31 +83,19 @@ bool exec_dpimm_instr(emulstate *state, ulong raw)
     {
     case MOVN:
       operand = ~operand;
-      if (rd != 31)
-      {
-          set_reg(state, sf, rd, operand);
-      }
+      set_reg(state, sf, rd, operand);
       return true;
-      break;
     case MOVZ:
-      if (rd != 31) 
-      {
-        set_reg(state, sf, rd, operand);
-      }
+      set_reg(state, sf, rd, operand);
       return true;
-      break;
     case MOVK:
-      if (rd != 31) 
-      {
-        ullong rd_val = get_reg(state, sf, rd);
-        ulong shift = hw * 16;
-        ulong mask = 0xFFFFul << shift;
-        rd_val &= ~(mask);
-        rd_val |= (imm16 << shift); // (rd_val & ~mask) | (imm16 << shift)
-        set_reg(state, sf, rd, rd_val);
-      }
+      ullong rd_val = get_reg(state, sf, rd);
+      ulong shift = hw * 16;
+      ulong mask = 0xFFFFul << shift;
+      rd_val &= ~(mask);
+      rd_val |= (imm16 << shift); // (rd_val & ~mask) | (imm16 << shift)
+      set_reg(state, sf, rd, rd_val);
       return true;
-      break;
     default:
       return false;
     }
