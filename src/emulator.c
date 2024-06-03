@@ -143,6 +143,15 @@ ulong get_value(ulong from, uint offset, uint size)
 // Utility function to set a register value, and correct for 32/64 bit mode.
 void set_reg(emulstate *state, bool sf, byte rg, ullong value)
 {
+  if (rg > GENERAL_REGS)
+  {
+    fprintf(stderr, "Error: Out of bounds register number %d\n", rg);
+    exit(1);
+  }
+  else if (rg == GENERAL_REGS)
+  {
+    return; // ZR register ignores writes
+  }
   if (sf)
   {
     state->regs[(int)rg] = value;
