@@ -47,7 +47,7 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
 
   // Define operation
   bool arithmetic = (opr & ARITHMETIC_TEST) == ARITHMETIC_EXPECTED;
-  bool bit_logic = (opr & BIT_LOGIC_TEST) == BIT_LOGIC_TEST;
+  bool bit_logic = (opr & BIT_LOGIC_TEST) == BIT_LOGIC_EXPECTED;
   bool multiply = (opr & MULTIPLY_TEST) == MULTIPLY_EXPECTED;
 
   if (!M)
