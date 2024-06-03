@@ -60,17 +60,17 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
     {
       // LSL
       case 0:
-        rm_value <<= operand;
+        {rm_value <<= operand;}
         //set_reg(state, sf, rm_addr, rm_value);
         break;
       // LSR
       case 1:
-        rm_value >>= operand;
+        {rm_value >>= operand;}
         //set_reg(state, sf, rm_addr, rm_value);
         break;
       // ASR
       case 2:
-        bool MSB = 0;
+        {bool MSB = 0;
         if (sf) 
         {
           MSB = (rm_value >> 63) == 1;
@@ -94,10 +94,10 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
             }
           }
         }
-        break;
+        break;}
       // ROR
       case 3:
-        if (!bit_logic)
+        {if (!bit_logic)
         {
           return false;
         }
@@ -118,10 +118,9 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
             }
           }
         }
-        break;
+        break;}
       default:
-        return false;
-        break;
+        {return false;}
     }
 
     // Checking N
@@ -138,19 +137,19 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
       {
       // and
       case 0:
-        rd_value = rn_value & rm_value;
-        break;
+        {rd_value = rn_value & rm_value;
+        break;}
       // or
       case 1:
-        rd_value = rn_value | rm_value;
-        break;
+        {rd_value = rn_value | rm_value;
+        break;}
       // xor
       case 2:
-        rd_value = rn_value ^ rm_value;
-        break;
+        {rd_value = rn_value ^ rm_value;
+        break;}
       // and (setting flags)
       case 3:
-        rd_value = rn_value & rm_value;
+        {rd_value = rn_value & rm_value;
         if (sf) 
         {
           state->pstate.negative = (rd_value >> 63) == 1;
@@ -164,8 +163,7 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
         state->pstate.overflow = 0;
         break;
       default:
-        return false;
-        break;
+        return false;}
       }
     }
     else if (arithmetic)
@@ -174,11 +172,11 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
       {
       // add
       case 0:
-        rd_value = rn_value + rm_value;
-        break;
+        {rd_value = rn_value + rm_value;
+        break;}
       // add (setting flags)
       case 1:
-        rd_value = rn_value + rm_value;
+        {rd_value = rn_value + rm_value;
         if (sf) 
         {
           state->pstate.negative = (rd_value >> 63) == 1;
@@ -194,14 +192,14 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
         {
           state->pstate.overflow = 1;
         }
-        break;
+        break;}
       // subtract
       case 2:
-        rd_value = rn_value - rm_value;
-        break;
+        {rd_value = rn_value - rm_value;
+        break;}
       // subtract (setting flags)
       case 3:
-        rd_value = rn_value - rm_value;
+        {rd_value = rn_value - rm_value;
         if (sf) 
         {
           state->pstate.negative = (rd_value >> 63) == 1;
@@ -217,10 +215,9 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
         {
           state->pstate.overflow = 1;
         }
-        break;
+        break;}
       default:
-        return false;
-        break;
+        {return false;}
       }
     }
   }
