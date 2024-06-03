@@ -21,44 +21,53 @@ bool exec_branch_instr(emulstate *state, ulong raw)
 {
   if ((raw & UncondTest) == UncondExpected){
     ulong simm26 = get_value(raw,0,26);
-    ullong offset = simm26*4;
-    state->pc += sign_extend(offset, get_value(simm26, 0, 26));
+    ullong offset = sign_extend(simm26*4, get_value(raw, 0, 26));
+    state->pc += offset;
   }
 
   else if ((raw & RegisterTest) == RegisterExpected){ 
-    ulong xn = get_value(raw,5,5);
-    state->pc += get_reg(state, 1, xn);
+    byte xn = get_value(raw,5,5);
+    state->pc = get_reg(state, 1, xn);
   }
 
   else if ((raw & CondTest) == CondExpected) {
     ulong simm19 = get_value(raw,5,19);
-    ullong offset = simm19*4;
+    ullong offset = sign_extend(simm19, get_value(raw, 0, 19));
     ulong cond = get_value(raw,0,4);
     bool execute = 0;
 
     switch (cond){
       case EQ:
-        {execute = (state->pstate.zero == 1);}
+        {execute = (state->pstate.zero == 1);
+        break;}
       case NE:
-        {execute = (state->pstate.zero == 0);}
+        {execute = (state->pstate.zero == 0);
+        break;}
       case GE:
-        {execute = (state->pstate.negative == state->pstate.overflow);}
+        {execute = (state->pstate.negative == state->pstate.overflow);
+        break;}
       case LT:
-        {execute = (state->pstate.negative != state->pstate.overflow);}
+        {execute = (state->pstate.negative != state->pstate.overflow);
+        break;}
       case GT:
-        {execute = (state->pstate.zero == 0) & (state->pstate.negative == state->pstate.overflow);}
+        {execute = (state->pstate.zero == 0) && (state->pstate.negative == state->pstate.overflow);
+        break;}
       case LE:
-        {execute = !((state->pstate.zero == 0) & (state->pstate.negative == state->pstate.overflow));}
+        {execute = !((state->pstate.zero == 0) && (state->pstate.negative == state->pstate.overflow));
+        break;}
       case AL:
-        {execute = 1;}
+        {execute = 1;
+        break;}
+      default:
+        return false;
 
       if (execute) {
-        state->pc += sign_extend(offset, get_value(simm19, 0, 19));
+        state->pc += offset;
       } 
     }
 
   }
-  
+
   else {
     return false;
   }

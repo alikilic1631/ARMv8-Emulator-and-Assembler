@@ -52,7 +52,7 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
 
   if (!M)
   {
-    if ((sf & (operand >= 63)) | (!sf & (operand >= 31)))
+    if ((sf && (operand >= 63)) || (!sf && (operand >= 31)))
     {
       return false;
     }
@@ -105,7 +105,7 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
           return false;
         }
 
-        for (int i = 0; i< operand; i++)
+        for (int i = 0; i < operand; i++)
         {
           bool LSB = rm_value & LSB_MASK;
           rm_value >>= 1;
@@ -127,7 +127,7 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
     }
 
     // Checking N
-    if (bit_logic & N) 
+    if (bit_logic && N) 
     {
       rm_value = ~rm_value;
     }
@@ -164,9 +164,9 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
         state->pstate.zero = rd_value == 0;
         state->pstate.carry = 0;
         state->pstate.overflow = 0;
-        break;
+        break;}
       default:
-        return false;}
+        {return false;}
       }
     }
     else if (arithmetic)
@@ -191,7 +191,7 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
         state->pstate.zero = rd_value == 0;
         state->pstate.carry = rd_value < rn_value;
         state->pstate.overflow = 0;
-        if (((rn_value ^ rm_value) >= 0) & ((rn_value ^ rd_value) < 0))
+        if (((rn_value ^ rm_value) >= 0) && ((rn_value ^ rd_value) < 0))
         {
           state->pstate.overflow = 1;
         }
@@ -214,7 +214,7 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
         state->pstate.zero = rd_value == 0;
         state->pstate.carry = rd_value > rn_value;
         state->pstate.overflow = 0;
-        if (((rn_value ^ rm_value) < 0) & ((rn_value ^ rd_value) < 0))
+        if (((rn_value ^ rm_value) < 0) && ((rn_value ^ rd_value) < 0))
         {
           state->pstate.overflow = 1;
         }
@@ -224,7 +224,7 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
       }
     }
   }
-  else if (M & multiply)
+  else if (M && multiply)
   {
     bool x = get_value(operand , 6, 1);
     byte ra_addr = get_value(operand, 0, 5);
