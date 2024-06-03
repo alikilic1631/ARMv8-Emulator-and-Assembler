@@ -66,12 +66,10 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
       // LSL
       case 0:
         {rm_value <<= operand;}
-        //set_reg(state, sf, rm_addr, rm_value);
         break;
       // LSR
       case 1:
         {rm_value >>= operand;}
-        //set_reg(state, sf, rm_addr, rm_value);
         break;
       // ASR
       case 2:

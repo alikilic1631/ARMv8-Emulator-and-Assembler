@@ -38,17 +38,19 @@ bool exec_branch_instr(emulstate *state, ulong raw)
 
     switch (cond){
       case EQ:
-        execute = (state->pstate.zero == 1);
+        {execute = (state->pstate.zero == 1);}
       case NE:
-        execute = (state->pstate.zero == 0);
+        {execute = (state->pstate.zero == 0);}
+      case GE:
+        {execute = (state->pstate.negative == state->pstate.overflow);}
       case LT:
-        execute = (state->pstate.negative == state->pstate.overflow);
+        {execute = (state->pstate.negative != state->pstate.overflow);}
       case GT:
-        execute = (state->pstate.negative != state->pstate.overflow);
+        {execute = (state->pstate.zero == 0) & (state->pstate.negative == state->pstate.overflow);}
       case LE:
-        execute = !((state->pstate.zero == 0) & (state->pstate.negative == state->pstate.overflow));
+        {execute = !((state->pstate.zero == 0) & (state->pstate.negative == state->pstate.overflow));}
       case AL:
-        execute = 1;
+        {execute = 1;}
 
       if (execute) {
         state->pc += sign_extend(offset, get_value(simm19, 0, 19));
@@ -56,10 +58,10 @@ bool exec_branch_instr(emulstate *state, ulong raw)
     }
 
   }
-
+  
   else {
-    return 0;
+    return false;
   }
 
-  return 1;
+  return true;
 }
