@@ -117,7 +117,7 @@ bool exec_dpimm_instr(emulstate *state, ulong raw)
       {
         ullong rd_val = get_reg(state, sf, rd);
         ulong shift = hw * 16;
-        ulong mask = 0xFFFF << shift; // 16 bits. Do I need to zero_extend?
+        ulong mask = 0xFFFFul << shift;
         rd_val &= ~(mask);
         rd_val |= (imm16 << shift); // (rd_val & ~mask) | (imm16 << shift)
         set_reg(state, sf, rd, rd_val);
