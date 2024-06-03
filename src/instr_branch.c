@@ -6,8 +6,8 @@
 #define RegisterTest 0xFFFFFC1F
 #define RegisterExpected 0xD61F0000
 
-#define CondTest 0b11111111 << 23
-#define CondExpected 0b01010100 << 23
+#define CondTest 0x7F800000
+#define CondExpected 0x2A000000
 
 #define EQ 0
 #define NE 1
@@ -44,14 +44,14 @@ bool exec_branch_instr(emulstate *state, ulong raw)
       case LT:
         execute = (state->pstate.negative == state->pstate.overflow);
       case GT:
-        execute = (state->pstate.overflow != state->pstate.overflow);
+        execute = (state->pstate.negative != state->pstate.overflow);
       case LE:
         execute = !((state->pstate.zero == 0) & (state->pstate.negative == state->pstate.overflow));
       case AL:
         execute = 1;
 
       if (execute) {
-        state->pc += sign_extend(simm19, get_value(simm19, 0, 19));
+        state->pc += sign_extend(offset, get_value(simm19, 0, 19));
       } 
     }
 
