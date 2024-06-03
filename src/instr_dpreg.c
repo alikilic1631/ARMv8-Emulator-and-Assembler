@@ -52,6 +52,11 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
 
   if (!M)
   {
+    if ((sf & (operand >= 63)) | (!sf & (operand >= 31)))
+    {
+      return false;
+    }
+    
     byte shift = get_value(opr, 1, 2);
     bool N = get_value(opr, 0, 1);
 
