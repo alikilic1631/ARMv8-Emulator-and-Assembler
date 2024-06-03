@@ -17,13 +17,15 @@ void set_pstate_flags(emulstate *state, bool sf, ullong result, ullong rn, ullon
   // Set flags
   state->pstate.negative = (result < 0);
   state->pstate.zero = (result == 0);
-  if (add) {
-        state->pstate.carry = (result < rn);
-        state->pstate.overflow = ((rn > 0) == (op2 > 0)) && ((result > 0) != (rn > 0));
-    } else {
-        state->pstate.carry = (rn >= op2);
-        state->pstate.overflow = ((rn > 0) != (op2 > 0)) && ((result > 0) != (rn > 0));
-    }
+  if (add) 
+  {
+    state->pstate.carry = (result < rn);
+    state->pstate.overflow = ((rn > 0) == (op2 > 0)) && ((result > 0) != (rn > 0));
+  } else 
+  {
+    state->pstate.carry = (rn >= op2);
+    state->pstate.overflow = ((rn > 0) != (op2 > 0)) && ((result > 0) != (rn > 0));
+  }
 }
 
 bool exec_dpimm_instr(emulstate *state, ulong raw)
@@ -51,23 +53,31 @@ bool exec_dpimm_instr(emulstate *state, ulong raw)
     switch (opc)
     {
     case ADD:
+    {
       result = rn_val + imm12;
       set_reg(state, sf, rd, result);
       return true;
+    }
     case ADDS:
+    {
       result = rn_val + imm12;
       set_reg(state, sf, rd, result);
       set_pstate_flags(state, sf, result, rn_val, operand, true); // update condition flags
       return true;
+    }
     case SUB:
+    {
       result = rn_val - imm12;
       set_reg(state, sf, rd, result);
       return true;
+    }
     case SUBS:
+    {
       result = rn_val - imm12;
       set_reg(state, sf, rd, result);
       set_pstate_flags(state, sf, result, rn_val, operand, false);
       return true;
+    }
     default:
       return false;
     }
@@ -82,13 +92,16 @@ bool exec_dpimm_instr(emulstate *state, ulong raw)
     switch (opc)
     {
     case MOVN:
+    {
       operand = ~operand;
       set_reg(state, sf, rd, operand);
       return true;
+    }
     case MOVZ:
       set_reg(state, sf, rd, operand);
       return true;
     case MOVK:
+    {
       ullong rd_val = get_reg(state, sf, rd);
       ulong shift = hw * 16;
       ulong mask = 0xFFFFul << shift;
@@ -96,6 +109,7 @@ bool exec_dpimm_instr(emulstate *state, ulong raw)
       rd_val |= (imm16 << shift); // (rd_val & ~mask) | (imm16 << shift)
       set_reg(state, sf, rd, rd_val);
       return true;
+    }
     default:
       return false;
     }
