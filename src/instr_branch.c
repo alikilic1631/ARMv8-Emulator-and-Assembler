@@ -1,4 +1,5 @@
 #include "instr_branch.h"
+#include <stdbool.h>
 
 #define UncondTest 0x7E000000
 #define UncondExpected 0xA000000
@@ -9,13 +10,13 @@
 #define CondTest 0x7F800000
 #define CondExpected 0x2A000000
 
-#define EQ 0
-#define NE 1
-#define GE 10
-#define LT 11
-#define GT 12
-#define LE 13
-#define AL 14
+#define EQ 0x0
+#define NE 0x1
+#define GE 0xA
+#define LT 0xB
+#define GT 0xC
+#define LE 0xD
+#define AL 0xE
 
 bool exec_branch_instr(emulstate *state, ulong raw)
 {
@@ -33,7 +34,7 @@ bool exec_branch_instr(emulstate *state, ulong raw)
   else if ((raw & CondTest) == CondExpected) {
     ulong simm19 = get_value(raw,5,19);
     ullong offset = sign_extend(simm19, get_value(raw, 0, 19));
-    ulong cond = get_value(raw,0,4);
+    byte cond = get_value(raw,0,4);
     bool execute = 0;
 
     switch (cond){
