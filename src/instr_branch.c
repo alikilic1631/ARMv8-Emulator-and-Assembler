@@ -22,7 +22,7 @@ bool exec_branch_instr(emulstate *state, ulong raw)
 {
   if ((raw & UncondTest) == UncondExpected){
     ulong simm26 = get_value(raw,0,26);
-    ullong offset = sign_extend(simm26*4, get_value(raw, 0, 26));
+    ullong offset = sign_extend_64bit(simm26*4, get_value(raw, 0, 26));
     state->pc += offset;
   }
 
@@ -33,7 +33,7 @@ bool exec_branch_instr(emulstate *state, ulong raw)
 
   else if ((raw & CondTest) == CondExpected) {
     ulong simm19 = get_value(raw,5,19);
-    ullong offset = sign_extend(simm19, get_value(raw, 0, 19));
+    ullong offset = sign_extend_64bit(simm19, get_value(raw, 0, 19));
     byte cond = get_value(raw,0,4);
     bool execute = 0;
 
@@ -74,4 +74,13 @@ bool exec_branch_instr(emulstate *state, ulong raw)
   }
 
   return true;
+}
+
+ullong sign_extend_64bit(ulong n, int sign_bit)
+{
+  if (n & (1 << sign_bit))
+  {
+    n |= (ullong)(-1) << (sign_bit + 1);
+  }
+  return n;
 }
