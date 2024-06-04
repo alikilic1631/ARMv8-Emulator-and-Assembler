@@ -30,7 +30,7 @@
 // 0b1 << 63  
 #define MSB_64BIT_MASK 0x8000000000000000
 
-#define SF_MASK 0xFFFF
+
 
 bool exec_dpreg_instr(emulstate *state, ulong raw)
 {
@@ -68,12 +68,12 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
       // LSL
       case 0:
         {rm_value <<= operand;
-        rm_value = sf_checker(rm_value, sf);
+        //rm_value = sf_checker(rm_value, sf);
         break;}
       // LSR
       case 1:
         {rm_value >>= operand;
-        rm_value = sf_checker(rm_value, sf);
+        //rm_value = sf_checker(rm_value, sf);
         break;}
       // ASR
       case 2:
@@ -84,7 +84,7 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
           rm_value >>= operand;
           if (MSB)
           {
-            rm_value |= (0xFFFFFFFF << (64 - operand));
+            rm_value |= (0xFFFFFFFFFFFFFFFF << (64 - operand));
           }
         }
         else
@@ -93,10 +93,10 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
           rm_value >>= operand;
           if (MSB)
           {
-            rm_value |= (0xFFFF << (32 - operand));
+            rm_value |= (0xFFFFFFFF << (32 - operand));
           }
         }
-        rm_value = sf_checker(rm_value, sf);
+        //rm_value = sf_checker(rm_value, sf);
         break;}
       // ROR
       case 3:
@@ -117,11 +117,11 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
             }
             else 
             {
-              rm_value |= ((ulong) 1 << 31);
+              rm_value |= ((ullong) 1 << 31);
             }
           }
         }
-        rm_value = sf_checker(rm_value, sf);
+        //rm_value = sf_checker(rm_value, sf);
         break;}
       default:
         {return false;}
@@ -131,14 +131,10 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
     if (bit_logic && N) 
     {
       rm_value = ~rm_value;
+      //rm_value = sf_checker(rm_value, sf);
     }
 
-    if (sf)
-    {
-      rm_value &= SF_MASK;
-    }
-
-    set_reg(state, sf, rm_addr, rm_value);
+    //set_reg(state, sf, rm_addr, rm_value);
 
     if (bit_logic)
     {
@@ -260,13 +256,4 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
 
   set_reg(state, sf, rd_addr, rd_value);
   return true;
-}
-
-ullong sf_checker(ullong value, bool sf)
-{
-  if (sf)
-  {
-    value &= SF_MASK;
-  }
-  return value;
 }
