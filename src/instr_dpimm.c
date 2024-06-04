@@ -15,16 +15,31 @@
 void set_pstate_flags(emulstate *state, bool sf, ullong result, ullong rn, ullong op2, bool add)
 {
   // Set flags
-  state->pstate.negative = (result < 0);
+  printf("sf: %d, res: %llx\n", sf, result);
+  if (sf) 
+  {
+    state->pstate.negative = (result >> 63) != 0;
+  }
+  else 
+  {
+    state->pstate.negative = (result >> 31) != 0;
+  }
   state->pstate.zero = (result == 0);
   if (add) 
   {
     state->pstate.carry = (result < rn);
-    state->pstate.overflow = ((rn > 0) == (op2 > 0)) && ((result > 0) != (rn > 0));
+    if (((rn ^ op2) >= 0) && ((rn ^ result) < 0))
+      {
+        state->pstate.overflow = 1;
+      }
   } else 
   {
     state->pstate.carry = (rn >= op2);
-    state->pstate.overflow = ((rn > 0) != (op2 > 0)) && ((result > 0) != (rn > 0));
+    state->pstate.overflow = 0;
+    if (((rn ^ op2) < 0) && ((rn ^ result) < 0))
+    {
+      state->pstate.overflow = 1;
+    }
   }
 }
 

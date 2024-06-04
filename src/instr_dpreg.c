@@ -222,7 +222,7 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
           state->pstate.negative = (rd_value >> 31) == 1;
         }
         state->pstate.zero = rd_value == 0;
-        state->pstate.carry = rd_value > rn_value;
+        state->pstate.carry = rd_value <= rn_value;
         state->pstate.overflow = 0;
         if (((rn_value ^ rm_value) < 0) && ((rn_value ^ rd_value) < 0))
         {
@@ -236,13 +236,14 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
   }
   else if (M && multiply)
   {
-    bool x = get_value(operand , 6, 1);
+    bool x = get_value(operand , 5, 1);
     byte ra_addr = get_value(operand, 0, 5);
     ullong ra_value = get_reg(state, sf, ra_addr);
 
     // multiply-subtract
     if (x)
     {
+
       rd_value = ra_value - (rn_value * rm_value);
       rd_value = sf_checker(rd_value, sf);
     }
