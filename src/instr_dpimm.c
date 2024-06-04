@@ -12,37 +12,6 @@
 #define MOVZ 2
 #define MOVK 3
 
-void set_pstate_flags(emulstate *state, bool sf, ullong result, ullong rn, ullong op2, bool add)
-{
-  // Set flags
-  printf("sf: %d, res: %llx\n", sf, result);
-  if (sf) 
-  {
-    state->pstate.negative = (result >> 63) != 0;
-  }
-  else 
-  {
-    state->pstate.negative = (result >> 31) != 0;
-  }
-  state->pstate.zero = (result == 0);
-  if (add) 
-  {
-    state->pstate.carry = (result < rn);
-    if (((rn ^ op2) >= 0) && ((rn ^ result) < 0))
-      {
-        state->pstate.overflow = 1;
-      }
-  } else 
-  {
-    state->pstate.carry = (rn >= op2);
-    state->pstate.overflow = 0;
-    if (((rn ^ op2) < 0) && ((rn ^ result) < 0))
-    {
-      state->pstate.overflow = 1;
-    }
-  }
-}
-
 bool exec_dpimm_instr(emulstate *state, ulong raw)
 {
   bool sf = get_value(raw, 31, 1); // 0=32-bit, 1=64-bit
@@ -130,4 +99,35 @@ bool exec_dpimm_instr(emulstate *state, ulong raw)
     }
   }
   return false;
+}
+
+void set_pstate_flags(emulstate *state, bool sf, ullong result, ullong rn, ullong op2, bool add)
+{
+  // Set flags
+  printf("sf: %d, res: %llx\n", sf, result);
+  if (sf) 
+  {
+    state->pstate.negative = (result >> 63) != 0;
+  }
+  else 
+  {
+    state->pstate.negative = (result >> 31) != 0;
+  }
+  state->pstate.zero = (result == 0);
+  if (add) 
+  {
+    state->pstate.carry = (result < rn);
+    if (((rn ^ op2) >= 0) && ((rn ^ result) < 0))
+      {
+        state->pstate.overflow = 1;
+      }
+  } else 
+  {
+    state->pstate.carry = (rn >= op2);
+    state->pstate.overflow = 0;
+    if (((rn ^ op2) < 0) && ((rn ^ result) < 0))
+    {
+      state->pstate.overflow = 1;
+    }
+  }
 }

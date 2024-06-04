@@ -3,10 +3,6 @@
 
 // Initialising Masks
 
-// 0b111
-#define DP_REG_TEST 7
-// 0b101
-#define DP_REG_EXPECTED 5
 // 0b1001
 #define ARITHMETIC_TEST 9
 // 0b1000
@@ -19,18 +15,10 @@
 #define MULTIPLY_TEST 15
 // 0b1000
 #define MULTIPLY_EXPECTED 8
-// ~(0b1 << 31)
-#define ASR_32BIT_MASK 2147483647
-// ~(0b1 << 63)
-#define ASR_64BIT_MASK 9223372036854775807
 // 0b1
 #define LSB_MASK 1
-// 0b1 << 31
-#define MSB_32BIT_MASK 2147483648
-// 0b1 << 63  
-#define MSB_64BIT_MASK 0x8000000000000000
-
-
+#define ASR_32BIT_MASK 0xFFFFFFFF
+#define ASR_64BIT_MASK 0xFFFFFFFFFFFFFFFF
 
 bool exec_dpreg_instr(emulstate *state, ulong raw)
 {
@@ -68,12 +56,10 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
       // LSL
       case 0:
         {rm_value <<= operand;
-        //rm_value = sf_checker(rm_value, sf);
         break;}
       // LSR
       case 1:
         {rm_value >>= operand;
-        //rm_value = sf_checker(rm_value, sf);
         break;}
       // ASR
       case 2:
@@ -84,7 +70,7 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
           rm_value >>= operand;
           if (MSB)
           {
-            rm_value |= (0xFFFFFFFFFFFFFFFF << (64 - operand));
+            rm_value |= (ASR_64BIT_MASK << (64 - operand));
           }
         }
         else
@@ -93,10 +79,9 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
           rm_value >>= operand;
           if (MSB)
           {
-            rm_value |= (0xFFFFFFFF << (32 - operand));
+            rm_value |= (ASR_32BIT_MASK << (32 - operand));
           }
         }
-        //rm_value = sf_checker(rm_value, sf);
         break;}
       // ROR
       case 3:
@@ -121,20 +106,16 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
             }
           }
         }
-        //rm_value = sf_checker(rm_value, sf);
         break;}
       default:
         {return false;}
     }
 
-    // Checking N
+    // Checking N (negate)
     if (bit_logic && N) 
     {
       rm_value = ~rm_value;
-      //rm_value = sf_checker(rm_value, sf);
     }
-
-    //set_reg(state, sf, rm_addr, rm_value);
 
     if (bit_logic)
     {

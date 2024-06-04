@@ -20,23 +20,27 @@
 
 bool exec_branch_instr(emulstate *state, ulong raw)
 {
+  // Unconditional branch
   if ((raw & UncondTest) == UncondExpected){
     ulong simm26 = get_value(raw,0,26);
     ullong offset = sign_extend_64bit(simm26 * INSTR_SIZE, 25);
     state->pc += offset;
   }
 
+  // Register branch
   else if ((raw & RegisterTest) == RegisterExpected){ 
     byte xn = get_value(raw,5,5);
     state->pc = get_reg(state, 1, xn);
   }
 
+  // Conditional branch
   else if ((raw & CondTest) == CondExpected) {
     ulong simm19 = get_value(raw,5,19);
     ullong offset = sign_extend_64bit(simm19 * INSTR_SIZE, 18);
     byte cond = get_value(raw,0,4);
     bool execute = 0;
 
+    // Determining conditions
     switch (cond){
       case EQ:
         {execute = (state->pstate.zero == 1);
