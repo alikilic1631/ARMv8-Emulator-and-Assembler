@@ -8,7 +8,7 @@
 
 #define NELEMENTS(arr) (sizeof(arr) / sizeof(*arr))
 #define MEMORY_BLOCKS 4
-#define INSTR_SIZE 4
+#define SF_MASK 0xFFFFFFFF
 
 // Print unknown instruction error message and exit
 static void unknown_instr(emulstate *state, ulong instr)
@@ -165,7 +165,7 @@ void set_reg(emulstate *state, bool sf, byte rg, ullong value)
 
 ullong get_reg(emulstate *state, bool sf, byte rg)
 {
-  if (rg >= GENERAL_REGS)
+  if (rg > GENERAL_REGS)
   {
     fprintf(stderr, "Error: Out of bounds register number %d\n", rg);
     exit(1);
@@ -214,4 +214,13 @@ ulong sign_extend(ulong n, int sign_bit)
     n |= (ulong)(-1) << (sign_bit + 1);
   }
   return n;
+}
+
+ullong sf_checker(ullong value, bool sf)
+{
+  if (!sf)
+  {
+    value &= SF_MASK;
+  }
+  return value;
 }

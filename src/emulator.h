@@ -5,6 +5,7 @@
 
 #ifndef EMULATOR_H
 #define EMULATOR_H
+#define INSTR_SIZE 4
 typedef unsigned char byte;
 typedef unsigned int uint;
 typedef unsigned long ulong;
@@ -47,4 +48,6 @@ extern ullong load_mem(emulstate *state, bool sf, ulong address);
 extern void store_mem(emulstate *state, bool sf, ulong address, ullong value);
 // Utility function sign extend a ulong.
 extern ulong sign_extend(ulong n, int sign_bit);
+// Utility function for masking 32-bits
+extern ullong sf_checker(ullong value, bool sf);
 #endif
