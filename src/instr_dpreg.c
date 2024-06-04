@@ -52,7 +52,7 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
 
   if (!M)
   {
-    if ((sf && (operand >= 63)) || (!sf && (operand >= 31)))
+    if ((sf && (operand >= 64)) || (!sf && (operand >= 32)))
     {
       return false;
     }
@@ -77,24 +77,19 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
         if (sf) 
         {
           MSB = (rm_value >> 63) == 1;
+          rm_value >>= operand;
+          if (MSB)
+          {
+            rm_value |= (0xFFFFFFFF << (64 - operand));
+          }
         }
         else
         {
           MSB = (rm_value >> 31) == 1;
-        }
-        for (int i = 0; i < operand; i++) 
-        {
-          rm_value >>= 1;
-          if (MSB) 
+          rm_value >>= operand;
+          if (MSB)
           {
-            if (sf)
-            {
-              rm_value |= MSB_64BIT_MASK;
-            }
-            else 
-            {
-              rm_value |= MSB_32BIT_MASK;
-            }
+            rm_value |= (0xFFFF << (64 - operand));
           }
         }
         break;}
@@ -113,11 +108,11 @@ bool exec_dpreg_instr(emulstate *state, ulong raw)
           {
             if (sf)
             {
-              rm_value |= MSB_64BIT_MASK;
+              rm_value |= ((ullong) 1 << 63);
             }
             else 
             {
-              rm_value |= MSB_32BIT_MASK;
+              rm_value |= ((ulong) 1 << 31);
             }
           }
         }
