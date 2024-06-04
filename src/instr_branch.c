@@ -1,14 +1,14 @@
 #include "instr_branch.h"
 #include <stdbool.h>
 
-#define UncondTest 0x7E000000
-#define UncondExpected 0xA000000
+#define UncondTest 0xFC000000
+#define UncondExpected 0x14000000
 
 #define RegisterTest 0xFFFFFC1F
 #define RegisterExpected 0xD61F0000
 
-#define CondTest 0x7F800000
-#define CondExpected 0x2A000000
+#define CondTest 0xFF000010
+#define CondExpected 0x54000000
 
 #define EQ 0x0
 #define NE 0x1
@@ -76,9 +76,9 @@ bool exec_branch_instr(emulstate *state, ulong raw)
   return true;
 }
 
-ullong sign_extend_64bit(ulong n, int sign_bit)
+ullong sign_extend_64bit(ullong n, int sign_bit)
 {
-  if (n & (1 << sign_bit))
+  if (n & (1ull << sign_bit))
   {
     n |= (ullong)(-1) << (sign_bit + 1);
   }
