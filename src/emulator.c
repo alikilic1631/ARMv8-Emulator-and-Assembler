@@ -144,7 +144,6 @@ ulong get_value(ulong from, uint offset, uint size)
 // Utility function to set a register value, and correct for 32/64 bit mode.
 void set_reg(emulstate *state, bool sf, byte rg, ullong value)
 {
-  printf("sf: %d rg: %d val: %lld\n", sf, rg, value);
   if (rg > GENERAL_REGS)
   {
     fprintf(stderr, "Error: Out of bounds register number %d\n", rg);
@@ -167,7 +166,7 @@ void set_reg(emulstate *state, bool sf, byte rg, ullong value)
 
 ullong get_reg(emulstate *state, bool sf, byte rg)
 {
-  if (rg >= GENERAL_REGS)
+  if (rg > GENERAL_REGS)
   {
     fprintf(stderr, "Error: Out of bounds register number %d\n", rg);
     exit(1);
@@ -220,7 +219,7 @@ ulong sign_extend(ulong n, int sign_bit)
 
 ullong sf_checker(ullong value, bool sf)
 {
-  if (sf)
+  if (!sf)
   {
     value &= SF_MASK;
   }
