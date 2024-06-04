@@ -8,7 +8,6 @@
 
 #define NELEMENTS(arr) (sizeof(arr) / sizeof(*arr))
 #define MEMORY_BLOCKS 4
-#define INSTR_SIZE 4
 #define SF_MASK 0xFFFFFFFF
 
 // Print unknown instruction error message and exit

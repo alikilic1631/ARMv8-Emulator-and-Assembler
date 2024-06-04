@@ -5,6 +5,7 @@
 
 #ifndef EMULATOR_H
 #define EMULATOR_H
+#define INSTR_SIZE 4
 typedef unsigned char byte;
 typedef unsigned int uint;
 typedef unsigned long ulong;
