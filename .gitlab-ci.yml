@@ -21,7 +21,7 @@ stages:
       - armv8_testsuite/test/actual_results/
   script:
     - cd src
-    - make $MAKE_TARGET
+    - make
     - cd ../armv8_testsuite
     - ./install
     - ./get_toolchain.sh
@@ -31,11 +31,9 @@ stages:
 emulate_testsuite:
   extends: .armv8_testsuite
   variables:
-    MAKE_TARGET: emulate
     TEST_FLAGS: E
 
 assemble_testsuite:
   extends: .armv8_testsuite
   variables:
-    MAKE_TARGET: assemble
     TEST_FLAGS: A
