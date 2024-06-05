@@ -1,7 +1,7 @@
 stages:
   - test
 
-armv8_testsuite:
+.armv8_testsuite:
   stage: test
   image:
     name: python
@@ -21,9 +21,21 @@ armv8_testsuite:
       - armv8_testsuite/test/actual_results/
   script:
     - cd src
-    - make
+    - make $MAKE_TARGET
     - cd ../armv8_testsuite
     - ./install
     - ./get_toolchain.sh
-    - ./run -p --toolchain ./arm-gnu-toolchain-13.2.Rel1-x86_64-aarch64-none-elf/bin/
+    - ./run -p$TEST_FLAGS --toolchain ./arm-gnu-toolchain-13.2.Rel1-x86_64-aarch64-none-elf/bin/
     - grep -q FAILED test/actual_results/results.json && exit 1 || exit 0
+
+emulate_testsuite:
+  extends: .armv8_testsuite
+  variables:
+    MAKE_TARGET: emulate
+    TEST_FLAGS: E
+
+assemble_testsuite:
+  extends: .armv8_testsuite
+  variables:
+    MAKE_TARGET: assemble
+    TEST_FLAGS: A
