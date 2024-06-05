@@ -114,7 +114,7 @@ bool emulstep(emulstate *state)
   case 0x4:
   case 0x6:
   case 0xc:
-  case 0xe: // Loads and Stores
+  case 0xe:                            // Loads and Stores
     if (!exec_sdt_instr(state, instr)) // DONE
       unknown_instr(state, instr);
     state->pc += INSTR_SIZE;
@@ -152,15 +152,7 @@ void set_reg(emulstate *state, bool sf, byte rg, ullong value)
   {
     return; // ZR register ignores writes
   }
-  if (sf)
-  {
-    state->regs[(int)rg] = value;
-  }
-  else
-  {
-    // Only first 32 bits of register are set, rest are zeroed.
-    state->regs[(int)rg] = value & 0xffffffff;
-  }
+  state->regs[(int)rg] = sf_checker(value, sf);
 }
 
 ullong get_reg(emulstate *state, bool sf, byte rg)
@@ -170,14 +162,7 @@ ullong get_reg(emulstate *state, bool sf, byte rg)
     fprintf(stderr, "Error: Out of bounds register number %d\n", rg);
     exit(1);
   }
-  if (sf)
-  {
-    return state->regs[(int)rg];
-  }
-  else
-  {
-    return state->regs[(int)rg] & 0xffffffff;
-  }
+  return sf_checker(state->regs[(int)rg], sf);
 }
 
 ullong load_mem(emulstate *state, bool sf, ulong address)
@@ -204,16 +189,6 @@ void store_mem(emulstate *state, bool sf, ulong address, ullong value)
   {
     state->memory[address + idx] = (value >> (idx * 8)) & 0xff;
   }
-}
-
-ulong sign_extend(ulong n, int sign_bit)
-{
-  if (n & (1 << sign_bit))
-  {
-    // (ulong)(-1) gets all 1s with correct length of ulong
-    n |= (ulong)(-1) << (sign_bit + 1);
-  }
-  return n;
 }
 
 ullong sf_checker(ullong value, bool sf)

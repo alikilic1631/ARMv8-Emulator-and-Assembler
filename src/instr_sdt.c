@@ -19,6 +19,16 @@
 // 0b000000000001 << 10
 #define INDEX_EXPECTED 1024
 
+ulong sign_extend(ulong n, int sign_bit)
+{
+  if (n & (1 << sign_bit))
+  {
+    // (ulong)(-1) gets all 1s with correct length of ulong
+    n |= (ulong)(-1) << (sign_bit + 1);
+  }
+  return n;
+}
+
 bool exec_sdt_instr(emulstate *state, ulong raw)
 {
   bool sf = get_value(raw, 30, 1);
