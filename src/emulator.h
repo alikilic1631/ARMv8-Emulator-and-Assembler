@@ -46,8 +46,6 @@ extern ullong get_reg(emulstate *state, bool sf, byte rg);
 extern ullong load_mem(emulstate *state, bool sf, ulong address);
 // Utility function to store a value to memory, and correct for 32/64 bit mode.
 extern void store_mem(emulstate *state, bool sf, ulong address, ullong value);
-// Utility function sign extend a ulong.
-extern ulong sign_extend(ulong n, int sign_bit);
 // Utility function for masking 32-bits
 extern ullong sf_checker(ullong value, bool sf);
 #endif
