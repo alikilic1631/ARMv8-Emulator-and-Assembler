@@ -46,7 +46,7 @@ bool exec_dpimm_instr(emulstate *state, ulong raw)
     {
       result = rn_val + imm12;
       set_reg(state, sf, rd, result);
-      set_pstate_flags(state, sf, result, rn_val, operand, true); // update condition flags
+      set_pstate_flags(state, sf, result, rn_val, imm12, true); // update condition flags
       return true;
     }
     case SUB:
@@ -59,7 +59,7 @@ bool exec_dpimm_instr(emulstate *state, ulong raw)
     {
       result = rn_val - imm12;
       set_reg(state, sf, rd, result);
-      set_pstate_flags(state, sf, result, rn_val, operand, false);
+      set_pstate_flags(state, sf, result, rn_val, imm12, false);
       return true;
     }
     default:
@@ -104,23 +104,22 @@ bool exec_dpimm_instr(emulstate *state, ulong raw)
 void set_pstate_flags(emulstate *state, bool sf, ullong result, ullong rn, ullong op2, bool add)
 {
   // Set flags
-  printf("sf: %d, res: %llx\n", sf, result);
-  if (sf) 
+  if (sf)
   {
     state->pstate.negative = (result >> 63) != 0;
   }
-  else 
+  else
   {
     state->pstate.negative = (result >> 31) != 0;
   }
   state->pstate.zero = (result == 0);
-  if (add) 
+  if (add)
   {
     state->pstate.carry = (result < rn);
     if (((rn ^ op2) >= 0) && ((rn ^ result) < 0))
-      {
-        state->pstate.overflow = 1;
-      }
+    {
+      state->pstate.overflow = 1;
+    }
   } else 
   {
     state->pstate.carry = (rn >= op2);
