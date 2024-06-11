@@ -4,5 +4,5 @@
 
 typedef struct {
     int argc;
-    char *argv[MAX_ARG_COUNT]
-} instr_t
+    char *argv[MAX_ARG_COUNT];
+} instr_t;
