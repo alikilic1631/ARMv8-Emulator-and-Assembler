@@ -1,10 +1,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "assemble.h"
-#include "first_pass.c"
-#include "second_pass.c"
+#include "assembler.h"
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   // Check correct number of arguments
   if (argc != 3)
   {
@@ -14,14 +14,16 @@ int main(int argc, char **argv) {
 
   // open the assembly file
   FILE *fin = fopen(argv[1], "r");
-  if (fin == NULL) {
+  if (fin == NULL)
+  {
     fprintf(stderr, "Error: Could not open file %s\n", argv[1]);
     return EXIT_FAILURE;
   }
 
   // open the output file
   FILE *fout = fopen(argv[2], "wb");
-  if (fout == NULL) {
+  if (fout == NULL)
+  {
     fprintf(stderr, "Error: Could not open file %s\n", argv[2]);
     return EXIT_FAILURE;
   }
