@@ -88,7 +88,7 @@ class RunnerConfig:
         self.expdir = self._prep_path_like(expdir)
         self.testdir = self._prep_path_like(testdir)
         
-        d = parse_config(CONFIG)
+        d = parse_config(CONFIG, ignore_assembler=self.emulator_only, ignore_emulator=self.assembler_only)
             
             
         self.assembler = self.prep_exec(d, assembler, "assembler", is_used=not self.emulator_only)

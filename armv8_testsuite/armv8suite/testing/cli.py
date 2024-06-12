@@ -37,6 +37,7 @@ else:
 
 
 def setup_params() -> argparse.ArgumentParser:
+    """ argparse commandline arguments setup. """
     parser = argparse.ArgumentParser(description="Run emulator and assembler tests")
 
     common = parser.add_argument_group("common options")
@@ -187,17 +188,20 @@ def setup_params() -> argparse.ArgumentParser:
 
 
 def parse_args(args_list: List[str]) -> argparse.Namespace:
+    """ Parse list of arguments from commandline. """
     parser = setup_params()
     args: argparse.Namespace = parser.parse_args(args_list)
     return args
 
 
 def setup_config_with_args(args_list: List[str]) -> RunnerConfig:
+    """ Setup a test-runner configuration with commandline arguments. """
     args = parse_args(args_list)
     return setup_config(args)
 
 
 def setup_config(args: argparse.Namespace) -> RunnerConfig:
+    """ Setup a test-runner configuration with commandline arguments parsed by argparse namespace. """
     make_cmd = ["make"]
     if not args.verbose:
         make_cmd += ["--silent"]
@@ -318,7 +322,13 @@ def _run_tests_process(cfg: RunnerConfig) -> RunnerResult:
 
 
 def run_tests_multi_process_with_cfg(cfg: RunnerConfig) -> RunnerResult:
-    num_procs = max(min(len(os.sched_getaffinity(0)) - 1, len(cfg.test_files) // 25), 1)
+    try:
+        num_procs = max(
+            min(mp.cpu_count() - 1, len(cfg.test_files) // 25),
+            1
+        )
+    except NotImplementedError:
+        num_procs = 1
 
     test_chunks = [cfg.test_files[i::num_procs] for i in range(num_procs)]
     cfgs = [

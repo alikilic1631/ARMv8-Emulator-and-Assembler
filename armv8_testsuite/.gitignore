@@ -9,9 +9,6 @@ tests/res/outfiles
 
 **/__pycache__/
 
-arm-gnu-toolchain-13.2.Rel1-x86_64-aarch64-none-elf
-!test/expected_results/**/*.out
-
 # Dev stuff
 non_student/default_solution
 .pytest_cache

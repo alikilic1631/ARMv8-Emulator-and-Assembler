@@ -7,13 +7,18 @@ RUN_SCRIPT="armv8suite.run_cli"
 SERVER="armv8server.app"
 
 
-run_server=False
+run_server=false
+dbg_server=false
 
-while getopts ":s" flag
+while getopts ":sd" flag
 do
     case "${flag}" in
-        s) run_server=True;
+        s) run_server=true;
             echo "Running Flask Server." ;
+            break;;
+        d) dbg_server=true;
+            run_server=true;
+            echo "Running Flask Server in Debug Mode." ;
             break;;
         \?) break ;;
         *) break ;;
@@ -26,10 +31,11 @@ then
     . ./.venv/bin/activate
 fi
 
+if [ $dbg_server = true ]; then dbg_arg="--debug"; else dbg_arg=""; fi
 
-if [ "$run_server" = True ]
+if [ "$run_server" = true ]
 then
-    python3 -m flask --app ${SERVER} run
+    python3 -m flask ${dbg_arg} --app ${SERVER} run
 else
     python3 -m ${RUN_SCRIPT} $@
 fi

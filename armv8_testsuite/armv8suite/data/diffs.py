@@ -1,3 +1,8 @@
+"""
+Ways to report differences between expected and actual values for test output.
+
+"""
+
 from __future__ import annotations
 
 # standard library
@@ -27,6 +32,18 @@ from armv8suite.data.reg import Reg
 
 
 
+def pad_str(s: str, length: int) -> str:
+    """Pads a string with spaces to the left."""
+    return ("  " * length) + s
+
+
+def indent_writer(out: Writer[str]) -> Writer[str]:
+    """Returns a Writer that indents all output by 2 spaces."""
+    class IndentWriter(Writer[str]):
+        def tell(self, t: str) -> None:
+            out.tell(pad_str(t, 1))
+    return IndentWriter()
+
 ###################################################################################################
 """ Dict Utils """
 
@@ -40,6 +57,10 @@ V = TypeVar("V")
 
 @dataclass
 class Diff(Generic[V]):
+    """
+    Represents the difference between an expected and actual value.
+    This is generic in V as there is a common way to represent differences between different types.
+    """
     exp: V
     act: V
 
@@ -47,6 +68,11 @@ class Diff(Generic[V]):
         return f"Expected: {self.exp}\nActual: {self.act}"
 
     def to_dict(self, hexify: bool = True) -> Dict[str, V | str]:
+        """
+        Returns a dictionary representation of the Diff object with keys "exp" and "act".
+
+        If hexify is True, then any integer values will be converted to a hex string.
+        """
         exp, act = self.exp, self.act
         if hexify:
             if isinstance(self.exp, int):
@@ -57,10 +83,14 @@ class Diff(Generic[V]):
         return {"exp": exp, "act": act}
 
     def map(self: Diff[V], f: Callable[[V], T]) -> Diff[T]:
+        """ Functor map """
         return Diff(f(self.exp), f(self.act))
 
     @classmethod
     def from_dict(cls, d: Dict[str, V]) -> Self:
+        """
+        Create a Diff object from a dictionary containing (at least) the keys "exp" and "act".
+        """
         if isinstance(d, Diff):
             return d
         return Diff(d["exp"], d["act"]) 
@@ -70,6 +100,9 @@ class Diff(Generic[V]):
 
 
 class ODiff(Diff[Optional[V]]):
+    """
+    Represents the difference between an expected and actual value, where either value can be None.
+    """
     @staticmethod
     def from_diff(d: Diff[V]) -> "ODiff[V]":
         return d.to_odiff()
@@ -85,30 +118,37 @@ class ODiff(Diff[Optional[V]]):
 X = TypeVar("X", bound=Dict)
 
 class Diffs(Generic[X], ABC):
+    """
+    A collection of differences between expected and actual values.
+    """
     Dict: ClassVar[TypeAlias]
     JSON_Dict: ClassVar[TypeAlias]
     
 
     def __bool__(self) -> bool:
+        """ Returns True if there are any differences. """
         return self.any_diffs()
 
 
     @abstractmethod
     def any_diffs(self) -> bool:
+        """ Returns True if there are any differences. """
         pass
 
     @abstractmethod
     def _str_msg(self) -> str:
+        """ Message to print before the differences. """
         pass
 
     def pretty(self) -> str:
+        """ Returns a pretty string representation of the differences. """
         out: StringWriter[str] = StringWriter()
         self.to_writer(out, with_message=True)
         return out.to_string(join_with="\n")
 
     @abstractmethod
     def _to_writer(
-        self, out: Writer[str], with_message: Optional[str], is_exp: bool
+        self, out: Writer[str], is_exp: bool, with_message: Optional[str] = None, indent: int = 0
     ) -> None:
         pass
 
@@ -118,7 +158,7 @@ class Diffs(Generic[X], ABC):
         if with_message:
             out.tell(self._str_msg())
         for i, act_tp in enumerate(["Actual", "Expected"]):
-            self._to_writer(out, with_message=act_tp, is_exp=i == 1)
+            self._to_writer(out, is_exp=i == 1, with_message=act_tp)
 
     @classmethod
     @abstractmethod
@@ -148,6 +188,7 @@ class Diffs(Generic[X], ABC):
 
 
 class DiffsDict(Dict[K, ODiff[V]], Diffs[Dict[K, Dict[str, V]]]):
+    """ A collection of differences between expected and actual dictionaries. """
     Dict: ClassVar[TypeAlias] = Dict[K, Dict[str, V]]
     JSON_Dict: ClassVar[TypeAlias] = dict[str, dict[str, str]]
 
@@ -175,6 +216,7 @@ class DiffsDict(Dict[K, ODiff[V]], Diffs[Dict[K, Dict[str, V]]]):
         key_str_f: Callable[[K], str],
         stringify_vals: bool,
         val_str_f: Callable[[V], str],
+        
     ) -> Dict[K | str, Dict[str, V]] | Dict[K , Diff[V]]:
         key_str_f2 = key_str_f if stringify_keys else lambda x: x
         res = {}
@@ -189,10 +231,6 @@ class DiffsDict(Dict[K, ODiff[V]], Diffs[Dict[K, Dict[str, V]]]):
                 res[key_str_f2(k)] = v
                 
         return res
-            
-            
-            # return {key_str_f2(k): v.map(val_str_f2).to_dict() for k, v in self.items()}
-        # return self
 
 
 NZMems = Dict[int, int]
@@ -204,14 +242,14 @@ class NZMDiffs(DiffsDict[int, int]):
         return "Non-zero Memory:"
     
     def _to_writer(
-        self, out: Writer[str], with_message: Optional[str], is_exp: bool
+        self, out: Writer[str], is_exp: bool, with_message: Optional[str] = None, indent: int = 0
     ) -> None:
         for k, v in self.items():
             val_str = prepare_hex_str(v.exp if is_exp else v.act)
             out.tell(f"0x{k:08x}: 0x{val_str}")
 
     @classmethod
-    def from_dict(cls, d: NZMDiffs.JSON_Dict) -> Self:
+    def from_dict(cls, d: NZMDiffs.JSON_Dict) -> NZMDiffs:
         return NZMDiffs({int(k, 16): Diff.from_dict(v).to_odiff().map_optional(lambda x: int(x, 16)) for k, v in d.items()})
 
 
@@ -220,7 +258,7 @@ class RegDiffs(DiffsDict[Reg, int]):
         return "Registers:"
     
     def _to_writer(
-        self, out: Writer[str], with_message: Optional[str], is_exp: bool
+        self, out: Writer[str], is_exp: bool, with_message: Optional[str] = None, indent: int = 0
     ) -> None:
         for k, v in self.items():
             val_str = prepare_hex_str(v.exp if is_exp else v.act, hex_size=16)
@@ -260,11 +298,11 @@ def prepare_hex_str(val: Optional[int], hex_size=8) -> str:
     return val_str
 
 
-class PStateDiff(Diff[PState], Diffs[Self]):
+class PStateDiff(Diff[PState], Diffs['PStateDiff']):
     
     Dict: ClassVar[TypeAlias] = Dict[str, str]
     JSON_Dict: ClassVar[TypeAlias] = dict[str, str]
-    
+
     def any_diffs(self) -> bool:
         return True
     
@@ -272,21 +310,29 @@ class PStateDiff(Diff[PState], Diffs[Self]):
         return "PState:"
     
     def _to_writer(
-        self, out: Writer[str], with_message: Optional[str], is_exp: bool
+        self, out: Writer[str], is_exp: bool, with_message: Optional[str] = None, indent: int = 0
     ) -> None:
-        out.tell(f"PSTATE: {self.exp if is_exp else self.act}")
-
+        out.tell(f"PState: {self.exp.pretty_str() if is_exp else self.act.pretty_str()}")
 
     def from_dict_str(self, d: Dict[str, str]) -> Self:
         return super().from_dict({k: PState.from_str(v) for k, v in d.items()})
 
+    @staticmethod
+    def from_dict(d: Dict[str, PState]) -> PStateDiff:
+        return PStateDiff(d["exp"], d["act"])
+
+    def to_dict(self, hexify: bool = True) -> Dict[str, PState | str]:
+        return {"exp": self.exp.pretty_str(), "act": self.act.pretty_str()}
+
     def _to_dict(
-        self, stringify_keys: bool, string_fuc: Callable[[Any], str]
+        self,
+        recursive: bool,
+        stringify_keys: bool,
+        string_fuc: Callable[[Any], str],
+        stringify_vals: bool,
+        val_str_f: Callable[[Any], str],
     ) -> Dict[str, str]:
         return Diff.to_dict(self.map(lambda x: x.pretty_str()), hexify=False)
-
-    def to_dict(self) -> Dict[str, str]:
-        return self._to_dict(False, lambda x: x)
 
     @staticmethod
     def compare(exp: PState, act: PState) -> Optional[PStateDiff]:
@@ -299,16 +345,17 @@ class PStateDiff(Diff[PState], Diffs[Self]):
 
 
 class AssemblerDiffs(DiffsDict[int, int]):
+    """ Diffs output by the assembler, comparing expected and actual binary files. """
     
     @classmethod
-    def from_dict(cls, d: AssemblerDiffs.JSON_Dict) -> Self:
+    def from_dict(cls, d: AssemblerDiffs.JSON_Dict) -> AssemblerDiffs:
         return AssemblerDiffs({int(k, 16): Diff.from_dict(v).to_odiff().map_optional(lambda x: int(x, 16)) for k, v in d.items()})
     
     def _str_msg(self) -> str:
         return "Assembler:"
     
     def _to_writer(
-        self, out: Writer[str], with_message: Optional[str], is_exp: bool
+        self, out: Writer[str], is_exp: bool, with_message: Optional[str] = None, indent: int = 0
     ) -> None:
         if not self:
             return
@@ -363,6 +410,7 @@ class EmulatorDict(TypedDict, total=False):
 
 @dataclass(slots=True)
 class EmulatorDiffs(Diffs["EmulatorDiffs"]):
+    """ Diffs output by the emulator, comparing expected and actual register values, memory, and PState. """
     regs: RegDiffs
     nz_mem: NZMDiffs
     pstate: Optional[PStateDiff]
@@ -414,34 +462,42 @@ class EmulatorDiffs(Diffs["EmulatorDiffs"]):
 
         return EmulatorDiffs(regs, nz_mem, pstate)
 
-    def _to_dict(self, stringify_keys: bool, string_func) -> EmulatorDiffs.Dict:
+    def _to_dict(
+        self,
+        recursive: bool,
+        stringify_keys: bool,
+        string_fuc: Callable[[Any], str],
+        stringify_vals: bool,
+        val_str_f: Callable[[Any], str]
+        ) -> EmulatorDiffs.Dict:
         res: EmulatorDiffs.Dict = {}
         if self.nz_mem:
-            res["nz_mem"] = self.nz_mem.to_dict()
+            res["nz_mem"] = self.nz_mem.to_dict(recursive=True)
         if self.regs:
-            res["regs"] = self.regs.to_dict(stringify_keys=True, key_str_f=Reg.__str__)
+            res["regs"] = self.regs.to_dict(stringify_keys=True, key_str_f=Reg.__str__, recursive=True)
         if self.pstate is not None:
             res["pstate"] = self.pstate.to_dict()
         return res
 
     def _to_writer(
-        self, out: Writer[str], with_message: Optional[str], is_exp: bool
+        self, out: Writer[str], is_exp: bool, with_message: Optional[str] = None, indent: int = 0
     ) -> None:
         if not self.any_diffs():
             return
         if with_message:
             out.tell(with_message)
         if self.regs:
-            self.regs.to_writer(out)
+            self.regs._to_writer(indent_writer(out), is_exp)
         if self.pstate:
-            self.pstate.to_writer(out)
+            self.pstate._to_writer(indent_writer(out), is_exp)
         if self.nz_mem:
-            self.nz_mem.to_writer(out)
+            out.tell("Memory:")
+            self.nz_mem._to_writer(indent_writer(out), is_exp)
 
     @staticmethod
     def from_dict(js: EmulatorDiffs.JSON_Dict) -> EmulatorDiffs:
         if "pstate" in js:
-            pstate = PStateDiff.from_dict( {k: PState.from_str(v) for k, v in js["pstate"]} )
+            pstate = PStateDiff.from_dict( {k: PState.from_str(v) for k, v in js["pstate"].items()} )
         else:
             pstate = None
 

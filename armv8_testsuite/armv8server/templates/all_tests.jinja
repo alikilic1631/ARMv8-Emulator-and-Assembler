@@ -12,6 +12,9 @@ Variables:
     results: list[string]
 
     link_portion: string
+
+    suite: module 
+        the armv8suite
 -->
 
 <!--body part-->
@@ -60,13 +63,7 @@ Variables:
                     {%for i in range(0,results|length) %}
                     <tr>
                         <td><a href="{{ routes.any_single(link_portion, files[i]) }}" style="font-family:monospace"> {{files[i]}} </a></td>
-                        {%if results[i] == "CORRECT" %}
-                        <td><span class="badge bg-success">CORRECT</span></td>
-                        {%elif results[i] == "INCORRECT" %}
-                        <td><span class="badge bg-warning">INCORRECT</span></td>
-                        {%elif results[i] == "FAIL" %}
-                        <td><span class="badge bg-danger">FAILED</span></td>
-                        {%endif%}
+                        {{ results[i] }}
                     </tr>
                     {%endfor%}
                 </tbody>
