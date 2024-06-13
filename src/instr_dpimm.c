@@ -12,7 +12,7 @@
 #define MOVZ 2
 #define MOVK 3
 
-bool exec_dpimm_instr(emulstate *state, ulong raw)
+bool exec_dpimm_instr(emulstate state, ulong raw)
 {
   bool sf = get_value(raw, 31, 1); // 0=32-bit, 1=64-bit
   ulong rd = get_value(raw, 0, 5); // 11111=Zero Register
@@ -101,7 +101,7 @@ bool exec_dpimm_instr(emulstate *state, ulong raw)
   return false;
 }
 
-void set_pstate_flags(emulstate *state, bool sf, ullong result, ullong rn, ullong op2, bool add)
+void set_pstate_flags(emulstate state, bool sf, ullong result, ullong rn, ullong op2, bool add)
 {
   // Set flags
   if (sf)
@@ -120,7 +120,7 @@ void set_pstate_flags(emulstate *state, bool sf, ullong result, ullong rn, ullon
     {
       state->pstate.overflow = 1;
     }
-  } else 
+  } else
   {
     state->pstate.carry = (rn >= op2);
     state->pstate.overflow = 0;

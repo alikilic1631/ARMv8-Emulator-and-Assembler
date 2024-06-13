@@ -18,7 +18,7 @@
 #define LE 0xD
 #define AL 0xE
 
-bool exec_branch_instr(emulstate *state, ulong raw)
+bool exec_branch_instr(emulstate state, ulong raw)
 {
   // Unconditional branch
   if ((raw & UncondTest) == UncondExpected){

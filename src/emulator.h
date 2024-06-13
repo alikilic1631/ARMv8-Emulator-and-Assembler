@@ -20,32 +20,33 @@ typedef struct
     bool overflow;
 } pstate_t;
 
-typedef struct
+struct emulstate
 {
     byte memory[MAX_MEMORY];
     ullong regs[GENERAL_REGS + 1]; // last is 0 register
     ullong pc;
     pstate_t pstate;
     // reg sp; // (spec 1.1 - "stack pointer can be ignored for this exercise")
+};
+typedef struct emulstate *emulstate;
 
-} emulstate;
-
-extern emulstate make_emulstate();
-extern void fprint_emulstate(FILE *stream, emulstate *state);
+extern emulstate emulstate_init();
+extern void emulstate_free(emulstate state);
+extern void fprint_emulstate(FILE *stream, emulstate state);
 // Returns true if program should continue (no halt)
-extern bool emulstep(emulstate *state);
+extern bool emulstep(emulstate state);
 
 // Utility function to get a range from a ulong. Useful for unpacking an instruction.
 extern ulong get_value(ulong from, uint offset, uint size);
 // Utility function to set a register value, and correct for 32/64 bit mode.
-extern void set_reg(emulstate *state, bool sf, byte rg, ullong value);
+extern void set_reg(emulstate state, bool sf, byte rg, ullong value);
 // Utility function to get a register value, and correct for 32/64 bit mode.
-extern ullong get_reg(emulstate *state, bool sf, byte rg);
+extern ullong get_reg(emulstate state, bool sf, byte rg);
 // Utility function to load a value from memory, and correct for 32/64 bit mode.
 // If 32-bit, rest of ullong is zeroed out.
-extern ullong load_mem(emulstate *state, bool sf, ulong address);
+extern ullong load_mem(emulstate state, bool sf, ulong address);
 // Utility function to store a value to memory, and correct for 32/64 bit mode.
-extern void store_mem(emulstate *state, bool sf, ulong address, ullong value);
+extern void store_mem(emulstate state, bool sf, ulong address, ullong value);
 // Utility function for masking 32-bits
 extern ullong sf_checker(ullong value, bool sf);
 #endif

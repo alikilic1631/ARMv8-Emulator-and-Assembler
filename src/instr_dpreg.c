@@ -20,7 +20,7 @@
 #define ASR_32BIT_MASK 0xFFFFFFFF
 #define ASR_64BIT_MASK 0xFFFFFFFFFFFFFFFF
 
-bool exec_dpreg_instr(emulstate *state, ulong raw)
+bool exec_dpreg_instr(emulstate state, ulong raw)
 {
 
   bool sf = get_value(raw, 31, 1);
