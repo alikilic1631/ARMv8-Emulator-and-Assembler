@@ -22,7 +22,7 @@ if [ $? -ne 0 ]; then
         echo "pip3 install failed. Aborting."
         exit 1
     fi
-    ehco "pip3 binary installed at:"
+    echo "pip3 binary installed at:"
     which pip3
 fi
 

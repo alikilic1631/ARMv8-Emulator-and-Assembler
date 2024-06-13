@@ -45,7 +45,7 @@ def ensure_executable(path: Path, name: str = "file"):
         return
 
 
-def parse_config(js: Path) -> Dict[str, str]:
+def parse_config(js: Path, ignore_assembler: bool, ignore_emulator: bool) -> Dict[str, str]:
     res = {}
     if not js.exists():
         return res
@@ -58,10 +58,10 @@ def parse_config(js: Path) -> Dict[str, str]:
 
     if "paths" in d:
         paths = d["paths"]
-        if "assembler" in paths:
+        if not ignore_assembler and "assembler" in paths:
             res["assembler"] = paths["assembler"]
             ensure_executable(Path(res["assembler"]), "assembler")
-        if "emulator" in paths:
+        if not ignore_emulator and "emulator" in paths:
             res["emulator"] = paths["emulator"]
             ensure_executable(Path(res["emulator"]), "emulator")
             

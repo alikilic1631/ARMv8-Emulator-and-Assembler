@@ -5,6 +5,7 @@ from jinja2.ext import Extension
 from jinja2.exceptions import TemplateRuntimeError
 
 import armv8server.setup.routes as routes
+import armv8suite as suite
 
 
 class RaiseExtension(Extension):
@@ -20,11 +21,13 @@ class RaiseExtension(Extension):
 
 
 def add_routes(app: Flask):
+    """ Add routes to the app context to be used in jinja templates via `routes` and `params` """
     @app.context_processor
     def inject_routes():
         return dict(
             routes=routes.WebRoutes,
             params=routes.Params,
+            suite=suite
         )
 
 def setup_app(app: Flask):

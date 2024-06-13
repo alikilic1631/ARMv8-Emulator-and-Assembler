@@ -67,6 +67,11 @@ class ResultType(Enum):
 
     def is_ok(self) -> bool:
         return self is ResultType.CORRECT
+    
+    @staticmethod
+    def from_str(s: str) -> ResultType:
+        """ Raises a ValueError if the string is not a valid ResultType. """
+        return ResultType(s.upper())
 
 
 class TestType(Enum):
@@ -162,6 +167,7 @@ class TestResult(Generic[D, DDict], ABC):
     TEST_KEY: str = "test"
 
     class InnerDict(TypedDict, total=False):
+        """ The info on the result """
         result: str
         log: List[str]
         diff: Dict
@@ -222,15 +228,17 @@ class TestResult(Generic[D, DDict], ABC):
         _diff = self.diff.to_dict(recursive=True) if self.diff else None
 
         to_write = TestResult.InnerDict(
-            result=str(self.result), log=self._log, diff=typing.cast(Dict, _diff)
+            result=str(self.result), 
+            log=self._log if self._log else [], 
+            diff=typing.cast(Dict, _diff)
         )
 
-        to_write: TestResult.InnerDict = {}
-        to_write[TestResult.RESULT_KEY] = str(self.result)
-        to_write[TestResult.LOG_KEY] = self._log if self._log else []
-        to_write[TestResult.DIFF_KEY] = (
-            self.diff.to_dict(recursive=True) if self.diff else None
-        )
+        # to_write: TestResult.InnerDict = {}
+        # to_write[TestResult.RESULT_KEY] = str(self.result)
+        # to_write[TestResult.LOG_KEY] = self._log if self._log else []
+        # to_write[TestResult.DIFF_KEY] = (
+        #     self.diff.to_dict(recursive=True) if self.diff else None
+        # )
         js[self.type.key_name()] = to_write
 
         with open(result_json, "w") as f:
@@ -272,6 +280,7 @@ class TestResult(Generic[D, DDict], ABC):
     @classmethod
     @extend_error("When converting test result from dict")
     def from_dict(cls, js: TestResult.Dict, test: Test) -> Self:
+        """ Turn a dictionary into a TestResult. The dictionary is usually from a json. """
         res = cls.from_test(test)
 
         js_sub: TestResult.InnerDict = js[res.type.key_name()]
@@ -318,7 +327,6 @@ class TestResult(Generic[D, DDict], ABC):
             [x for x in results if x.result is ResultType.INCORRECT]
         )
         return summary
-
 
 class AssemblerResult(TestResult[AssemblerDiffs, AssemblerDiffs.Dict]):
     def __init__(self, test: Test) -> None:

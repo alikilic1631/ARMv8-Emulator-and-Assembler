@@ -1,10 +1,12 @@
 from __future__ import annotations
 from functools import reduce
 from pathlib import Path
+import textwrap
 import traceback
 from typing import Any, Dict, List, Optional, Tuple
 
 import subprocess as sp
+import typing
 from colorama import Fore
 
 from result import Err, Ok, Result
@@ -311,9 +313,23 @@ class Runner:
         # Keeping Result changes local to this file
         parsed_out_state = parsing.parse_out_file(test._act_out)
         if parsed_out_state.is_err():
-            res.log(
-                f"Error Parsing .out File {test._act_out}: {parsed_out_state.err()}"
-            )
+            errs: List[ParseError] = typing.cast(List[ParseError], parsed_out_state.err())
+            
+            p_errs = []
+            for i, e in enumerate(errs):
+                p_err = str(e).splitlines()
+                p1, ps = p_err[0], p_err[1:]
+                w = textwrap.TextWrapper(
+                        width=80, initial_indent=f"    - ({i + 1}) ", subsequent_indent=" " * 10
+                    )
+                p_errs.extend(w.wrap(p1))
+
+                w.initial_indent = w.subsequent_indent
+                [p_errs.extend(w.wrap(p2)) for p2 in ps]
+
+            # p_errs = "\n".join(p_errs)
+            res.log(f"Error{'s' if len(errs) > 1 else ''} parsing .out File {test._act_out}:")
+            res.logs(p_errs)
             return res.with_result(ResultType.FAILED)
         assert isinstance(parsed_out_state, Ok)
 
@@ -408,7 +424,7 @@ class Runner:
                 self._exceptions[test] = e
                 print("Warning: Exception in test: ", test)
                 print(
-                    "\n".join(traceback.format_exception(type(e), e, e.__traceback__, limit=0))
+                    "\n".join(traceback.format_exception(type(e), e, e.__traceback__))
                 )
             if self._cfg.is_multi_threaded:
                 self._flush_log_buffer()

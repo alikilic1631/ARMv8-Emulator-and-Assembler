@@ -9,7 +9,8 @@ def main_try():
         args = sys.argv[1:]
         cli.run_and_write_tests_with_args(args)
     except Exception as e:
-        print(f"{type(e).__name__}: {e}")
+        print("Python Error:")
+        print(e)
         sys.exit(1)
     
 def main():

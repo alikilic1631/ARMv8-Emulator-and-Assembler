@@ -24,6 +24,8 @@ from armv8server.app import app
 from armv8server.server.render import *
 from armv8server.setup.setup import setup_app
 import armv8server.setup.routes as routes
+import armv8server.data as s_data
+import armv8server.data.result as s_result
 
 
 ###################################################################################################
@@ -83,7 +85,7 @@ class ExecNotFoundError(FileNotFoundError):
     pass
 
 
-def prepare_res(
+def parse_result_json(
     out_json: Path,
     args: List[str],
     test_type: TestType,
@@ -93,7 +95,7 @@ def prepare_res(
     """Tries to load the results json, reruns the tests if json not present or invalid"""
     run_anyway = False
 
-    def _perform_json_check() -> Result[Dict[str, Any], Exception]:
+    def _try_parse_json() -> Result[Dict[str, Any], Exception]:
         if not out_json.exists():
             app.logger.info(f"Results json {out_json} does not exist, rerunning")
             return Err(FileNotFoundError(f"Results json `{out_json}` does not exist"))
@@ -123,7 +125,7 @@ def prepare_res(
                 )
         return Ok(load_res.ok())
 
-    load_res = _perform_json_check()
+    load_res = _try_parse_json()
 
     if load_res.is_err():
         if isinstance(load_res.err(), JSONDecodeError):
@@ -156,7 +158,7 @@ def prepare_res(
             return Err(e)
         load_res = load_from_json(out_json)
 
-    second_check = _perform_json_check()
+    second_check = _try_parse_json()
     if second_check.is_err():
         return second_check
 
@@ -183,7 +185,7 @@ def run_all_common(args: List[str], test_type: TestType) -> str:
     sub_type = test_type.key_name()
     results_name = sub_type
 
-    res = prepare_res(
+    res = parse_result_json(
         out_json,
         args,
         test_type=test_type,
@@ -213,6 +215,7 @@ def run_all_common(args: List[str], test_type: TestType) -> str:
     files, results = res_.keys(), res_.values()
 
     files = [Path(f).relative_to(Path(TEST_CASES_DIR)) for f in files]
+    results = [s_result.column_template(ResultType(r)) for r in results]
 
     return render_template(
         "all_tests.jinja",
@@ -274,7 +277,7 @@ def run_single_common(test_file_name: str, test_type: TestType):
 
     out_json: Path = test._act_json
 
-    res = prepare_res(
+    res = parse_result_json(
         out_json,
         args + [str(test_file)],
         when_to_run=any(not f.exists() for f in [act_file, test._act_json]),
