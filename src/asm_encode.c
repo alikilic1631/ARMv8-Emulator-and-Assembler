@@ -265,7 +265,61 @@ ulong encode_sdt(symbol_table_t st, char *opcode, char *operands)
 
 ulong encode_branch(symbol_table_t st, char *opcode, char *operands)
 {
-  return 0;
+  ulong instr = 0;
+  bool xn_sf, xn_sp_used;
+  ulong xn;
+  ulong literal_value;
+
+  instr = set_value(instr, 0x5, 26, 3);
+
+  if (strcmp(opcode, "b") == 0) {
+    parse_literal(operands, &literal_value, st);
+    instr = set_value(instr, literal_value, 0, 26);
+  }
+  else if (strcmp(opcode, "br") == 0) {
+    instr = set_value(instr, 0x1F, 16, 5);
+    instr = set_value(instr, 0x6B, 25, 7);
+    parse_register(operands, &xn, &xn_sf, &xn_sp_used);
+    instr = set_value(instr, xn, 5, 5);
+  }
+  else {
+    instr = set_value(instr, 0x15, 26, 5);
+
+    opcode += 2;
+    int condition;
+    if (strcmp(opcode, "eq") == 0) {
+      condition = 0x0;
+    }
+    else if (strcmp(opcode, "ne") == 0) {
+      condition = 0x1;
+    }
+    else if (strcmp(opcode, "ge") == 0) {
+      condition = 0xA;
+    }
+    else if (strcmp(opcode, "lt") == 0) {
+      condition = 0xB;
+    }
+    else if (strcmp(opcode, "gt") == 0) {
+      condition = 0xC;
+    }
+    else if (strcmp(opcode, "le") == 0) {
+      condition = 0xD;
+    }
+    else if (strcmp(opcode, "al") == 0) {
+      condition = 0xE;
+    }
+    else {
+      fprintf(stderr, "Error: Undefined condition type.");
+      exit(1);
+    }
+    instr = set_value(instr, condition, 0, 4);
+
+    parse_literal(operands, &literal_value, st);
+    instr = set_value(instr, literal_value, 5, 19);
+  }
+
+  return instr;
+
 }
 
 ulong encode_directives(symbol_table_t st, char *opcode, char *operands)

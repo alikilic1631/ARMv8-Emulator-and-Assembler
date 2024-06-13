@@ -13,7 +13,7 @@
 char *data_processing[] = {"add", "adds", "sub", "subs", "cmp", "cmn", "neg", "negs",
                            "and", "ands", "bic", "bics", "eor", "orr", "eon", "orn", "tst", "movk", "movn",
                            "movz", "mov", "mvn", "madd", "msub", "mul", "mneg", NULL};
-char *branching[] = {"b", "b.cond", "br", NULL};
+char *branching[] = {"b", "br", "b.eq", "b.ne", "b.ge", "b.lt", "b.gt", "b.le", "b.al", NULL};
 char *sdts[] = {"str", "ldr", NULL};
 char *directives[] = {".int", NULL};
 
