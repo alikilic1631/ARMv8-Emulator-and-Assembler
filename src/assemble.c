@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "assembler.h"
 #include "symbol_table.h"
+#include "assemble.h"
 
 int main(int argc, char **argv)
 {
