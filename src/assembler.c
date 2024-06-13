@@ -1,15 +1,23 @@
+#include <assert.h>
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "assembler.h"
+#include "asm_encode.h"
+#include "parse_utils.h"
+
+#define MAX_LINE_LENGTH 256
+#define INSTR_SIZE 4
 
 char *data_processing[] = {"add", "adds", "sub", "subs", "cmp", "cmn", "neg", "negs",
                            "and", "ands", "bic", "bics", "eor", "orr", "eon", "orn", "tst", "movk", "movn",
                            "movz", "mov", "mvn", "madd", "msub", "mul", "mneg", NULL};
 char *branching[] = {"b", "b.cond", "br", NULL};
-char *loads_stores[] = {"str", "ldr", NULL};
+char *sdts[] = {"str", "ldr", NULL};
+char *directives[] = {".int", NULL};
 
-bool instruction_type(const char *instr, char **array)
+static bool instruction_type(const char *instr, char **array)
 {
   for (int i = 0; array[i] != NULL; i++)
   {
@@ -21,58 +29,38 @@ bool instruction_type(const char *instr, char **array)
   return false;
 }
 
-void add_symbol(const char *label, int address)
+static void parse_labels(symbol_table_t st, long *address, char *line)
 {
-  if (symbol_count >= MAX_SYMBOLS)
+  line = trim_left(line);
+  while (line[0] != '\0') // parse all labels in line (can contain multiple labels)
   {
-    fprintf(stderr, "Symbol table overflow\n");
-    exit(EXIT_FAILURE);
-  }
-  strncpy(symbol_table[symbol_count].label, label, MAX_LABEL_LENGTH - 1);
-  symbol_table[symbol_count].label[MAX_LABEL_LENGTH - 1] = '\0'; // Ensure null-termination
-  symbol_table[symbol_count].address = address;
-  symbol_count++;
-}
-
-int get_symbol_address(const char *label)
-{
-  for (int i = 0; i < symbol_count; i++)
-  {
-    if (strcmp(symbol_table[i].label, label) == 0)
-    {
-      return symbol_table[i].address;
-    }
-  }
-  fprintf(stderr, "Undefined label: %s\n", label);
-  exit(EXIT_FAILURE);
-}
-
-void print_symbol_table(void)
-{
-  for (int i = 0; i < symbol_count; i++)
-  {
-    printf("%s: %d\n", symbol_table[i].label, symbol_table[i].address);
-  }
-}
-
-void first_pass(FILE *source_file)
-{
-  char line[256];
-  int address = 0;
-
-  while (fgets(line, sizeof(line), source_file))
-  {
+    // find position of colon (if any)
     char *label_end = strchr(line, ':');
-    if (label_end)
+    if (label_end == NULL) // instruction line
     {
+      *address += INSTR_SIZE;
+      break;
+    }
+    else // label line
+    {
+      // allocate and copy label
       *label_end = '\0';
-      add_symbol(line, address);
+
+      // append to symbol table and continue
+      symbol_table_append(st, line, *address);
+      line = trim_left(label_end + 1);
     }
-    else
-    {
-      // Increment address by 4 bytes for each instruction or directive
-      address += 4;
-    }
+  }
+}
+
+void first_pass(FILE *source_file, symbol_table_t st)
+{
+  char line_buf[MAX_LINE_LENGTH];
+  long address = 0;
+
+  while (fgets(line_buf, sizeof(line_buf), source_file))
+  {
+    parse_labels(st, &address, line_buf);
   }
 
   // handle the error in case the line cannot be read from the file
@@ -81,64 +69,56 @@ void first_pass(FILE *source_file)
     fprintf(stderr, "Error reading from file\n");
     exit(EXIT_FAILURE);
   }
-
-  print_symbol_table();
 }
 
-unsigned int encode_add(const char *operands)
+static void write_binary(FILE *output_file, ulong instruction)
 {
-  unsigned int binary_instruction = 0;
-
-  // Parse the operands
-  char rd[8], rn[8], rm[8];
-  sscanf(operands, "%s %s %s", rd, rn, rm);
-
-  // Encode the 'add' instruction
-  // binary_instruction |= 0b00001011000000000000000000000000; // Set the opcode
-  // binary_instruction |= (atoi(rd) & 0b111) << 12; // Set the destination register
-  // binary_instruction |= (atoi(rn) & 0b111) << 16; // Set the first operand register
-  // binary_instruction |= (atoi(rm) & 0b111) << 0; // Set the second operand register
-
-  return binary_instruction;
+  // don't use fwrite on entire instruction directly to avoid undefined
+  // behaviour due to different memory layouts on different systems.
+  for (int idx = 0; idx < INSTR_SIZE; idx++)
+  {
+    byte b = (instruction >> (idx * 8)) & 0xFF;
+    fwrite(&b, 1, 1, output_file);
+  }
 }
 
-void write_binary(FILE *output_file, unsigned int instruction)
+static void parse_instruction(FILE *output_file, symbol_table_t st, char *line)
 {
-  fwrite(&instruction, sizeof(instruction), 1, output_file);
-}
+  char *label_end;
+  while ((label_end = strchr(line, ':')) != NULL)
+  {
+    line = label_end + 1;
+  }
+  line = trim_left(line);
+  if (line[0] == '\0') // empty line
+    return;
 
-void parse_instruction(const char *line, FILE *output_file)
-{
-  char opcode[8];
-  char operands[256]; // Assuming enough space for operands
-  sscanf(line, "%s %s", opcode, operands);
+  for (int idx = 0; line[idx] != '\0'; idx++)
+  {
+    line[idx] = tolower(line[idx]);
+  }
+  char *operands = strchr(line, ' ');
+  assert(operands != NULL); // all instructions have operands
+  operands[0] = '\0';       // split opcode and operands
+  operands = trim_left(operands + 1);
+  char *opcode = line;
 
-  unsigned int binary_instruction = 0;
-
-  // Encode the instruction based on the opcode and operands
-  // if (strcmp(opcode, "add") == 0) {
-  //     // Encode the 'add' instruction
-  //     binary_instruction = encode_add(operands);
-  // } else if (strcmp(opcode, "ldr") == 0) {
-  //     binary_instruction = encode_ldr(operands);
-  // }
-
-  // else {
-  //     fprintf(stderr, "Unknown opcode: %s\n", opcode);
-  //     exit(EXIT_FAILURE);
-  // }
-
+  ulong binary_instruction;
   if (instruction_type(opcode, data_processing))
   {
-    binary_instruction = encode_add(operands);
+    binary_instruction = encode_dp(st, opcode, operands);
   }
-  else if (instruction_type(opcode, loads_stores))
+  else if (instruction_type(opcode, sdts))
   {
-    // binary_instruction = encode_ldr(operands);
+    binary_instruction = encode_sdt(st, opcode, operands);
   }
   else if (instruction_type(opcode, branching))
   {
-    // binary_instruction = encode_b(operands);
+    binary_instruction = encode_branch(st, opcode, operands);
+  }
+  else if (instruction_type(opcode, directives))
+  {
+    binary_instruction = encode_directives(st, opcode, operands);
   }
   else
   {
@@ -149,16 +129,12 @@ void parse_instruction(const char *line, FILE *output_file)
   write_binary(output_file, binary_instruction);
 }
 
-void second_pass(FILE *source_file, FILE *output_file)
+void second_pass(FILE *source_file, FILE *output_file, symbol_table_t st)
 {
-  char line[256];
+  char line_buf[MAX_LINE_LENGTH];
 
-  while (fgets(line, sizeof(line), source_file))
+  while (fgets(line_buf, sizeof(line_buf), source_file))
   {
-    char *label_end = strchr(line, ':');
-    if (!label_end)
-    {
-      parse_instruction(line, output_file);
-    }
+    parse_instruction(output_file, st, line_buf);
   }
 }

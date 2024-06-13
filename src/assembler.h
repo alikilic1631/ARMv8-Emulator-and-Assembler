@@ -1,18 +1,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include "symbol_table.h"
 
-#define MAX_SYMBOLS 100
-#define MAX_LABEL_LENGTH 64
+typedef unsigned char byte;
+typedef unsigned long ulong;
 
 typedef struct
 {
-    char label[MAX_LABEL_LENGTH];
-    int address;
-} symbol_t;
+    char *opcode;
+    char *operands;
+} instr_t;
 
-symbol_t symbol_table[MAX_SYMBOLS];
-int symbol_count = 0;
-
-extern void first_pass(FILE *fin);
-extern void second_pass(FILE *fin, FILE *fout);
+extern void first_pass(FILE *fin, symbol_table_t symbol_table);
+extern void second_pass(FILE *fin, FILE *fout, symbol_table_t symbol_table);

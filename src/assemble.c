@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "assemble.h"
 #include "assembler.h"
+#include "symbol_table.h"
 
 int main(int argc, char **argv)
 {
@@ -28,8 +28,14 @@ int main(int argc, char **argv)
     return EXIT_FAILURE;
   }
 
-  first_pass(fin);
-  second_pass(fin, fout);
+  symbol_table_t symbol_table = symbol_table_init();
 
+  first_pass(fin, symbol_table);
+  rewind(fin);
+  second_pass(fin, fout, symbol_table);
+  fclose(fin);
+  fclose(fout);
+
+  symbol_table_free(symbol_table);
   return EXIT_SUCCESS;
 }
