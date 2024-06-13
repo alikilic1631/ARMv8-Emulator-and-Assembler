@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include "emulator.h"
+#include "emulate.h"
 
 int main(int argc, char **argv)
 {
@@ -34,7 +35,7 @@ int main(int argc, char **argv)
 
   // Create emulator state, load memory from binary file, and run
   // emulation steps while HALT is not reached.
-  emulstate state = make_emulstate(); // initialise memory and registers
+  emulstate state = make_emulstate();      // initialise memory and registers
   fread(state.memory, 1, MAX_MEMORY, fin); // we expect less than MAX_MEMORY to be writen, ignore return value
   fclose(fin);
 
