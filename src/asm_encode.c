@@ -176,7 +176,7 @@ ulong encode_sdt(symbol_table_t st, char *opcode, char *operands)
   instr = set_value(instr, rt, 0, 5);
 
   if (operands[0] == '[') {
-    //is_literal = false;
+    is_literal = false;
     operands++;
     operands = parse_register(operands, &xn, &xn_sf, &xn_sp_used);
     
@@ -200,20 +200,18 @@ ulong encode_sdt(symbol_table_t st, char *opcode, char *operands)
       if (operands[0] != '#') {
         //is_reg = true;
         instr = set_value(instr, 1, 21, 1);
-        instr = set_value(instr, 13, 11, 4);
+        instr = set_value(instr, 0xD, 11, 4);
         operands = parse_register(operands, &xm, &xm_sf, &xm_sp_used);
         instr = set_value(instr, xm, 16, 5);
       }
       else {
-        char *temp_operand = operands;
-        while (isspace(*(temp_operand + 1))) {
-          temp_operand++;
+        int counter = 1;
+        for (char *temp = operands; *temp != ']'; temp++) {
+          counter++;
         }
-        if (*temp_operand == '!') {
+        if (operands[counter] == '!') {
           //is_pre_indexed == true;
-          instr = set_value(instr, 3, 10, 2);
-          operands++;
-          operands = finish_parse_operand(operands);
+          instr = set_value(instr, 0x3, 10, 2);
           operands++;
           parse_simm(operands, &simm_value);
           instr = set_value(instr, simm_value, 12, 9);
@@ -221,21 +219,24 @@ ulong encode_sdt(symbol_table_t st, char *opcode, char *operands)
         else {
           //is_unsigned_offset = true;
           instr = set_value(instr, 1, 24, 1);
+          operands++;
+          parse_imm(operands, &imm_value);
           if (rt_sf) {
             instr = set_value(instr, (imm_value / 8), 10, 12);
           }
           else {
             instr = set_value(instr, (imm_value / 4), 10, 12);
           }
-          operands++;
-          operands = finish_parse_operand(operands);
-          operands++;
-          parse_imm(operands, &imm_value);
         }
       }
     }
   }
   else {
+    if (strcmp(opcode, "ldr") != 0) 
+    {
+      fprintf(stderr, "Error: Literal is only available in load instructions.");
+      exit(1);
+    }
     parse_literal(operands, &literal_value, st);
     instr = set_value(instr, literal_value, 5, 19);
   }
@@ -244,7 +245,7 @@ ulong encode_sdt(symbol_table_t st, char *opcode, char *operands)
     instr = set_value(instr, 1, 30, 1);
   }
 
-  instr = set_value(instr, 3, 27, 2);
+  instr = set_value(instr, 0x3, 27, 2);
 
   if (!is_literal) 
   {
