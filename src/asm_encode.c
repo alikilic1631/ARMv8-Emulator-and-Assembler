@@ -182,7 +182,7 @@ ulong encode_sdt(symbol_table_t st, char *opcode, char *operands)
     
     if (operands[0] == ']') {
       if (operands[1] == ',') {
-        //is_post_indexed = true;
+        // post-indexed
         instr = set_value(instr, 1, 10, 1);
         operands++;
         operands = finish_parse_operand(operands);
@@ -191,14 +191,14 @@ ulong encode_sdt(symbol_table_t st, char *opcode, char *operands)
         instr = set_value(instr, simm_value, 12, 9);
       }
       else {
-        //is_zero_unsigned_offset = true;
+        // zero unsigned offset
         instr = set_value(instr, 1, 24, 1);
       }
     }
     else if (operands[0] == ',') {
       operands = finish_parse_operand(operands);
       if (operands[0] != '#') {
-        //is_reg = true;
+        // register offset
         instr = set_value(instr, 1, 21, 1);
         instr = set_value(instr, 0xD, 11, 4);
         operands = parse_register(operands, &xm, &xm_sf, &xm_sp_used);
@@ -210,14 +210,14 @@ ulong encode_sdt(symbol_table_t st, char *opcode, char *operands)
           counter++;
         }
         if (operands[counter] == '!') {
-          //is_pre_indexed == true;
+          // pre-indexed
           instr = set_value(instr, 0x3, 10, 2);
           operands++;
           parse_simm(operands, &simm_value);
           instr = set_value(instr, simm_value, 12, 9);
         }
         else {
-          //is_unsigned_offset = true;
+          // unsigned offset
           instr = set_value(instr, 1, 24, 1);
           operands++;
           parse_imm(operands, &imm_value);
@@ -232,6 +232,7 @@ ulong encode_sdt(symbol_table_t st, char *opcode, char *operands)
     }
   }
   else {
+    // load from literal
     if (strcmp(opcode, "ldr") != 0) 
     {
       fprintf(stderr, "Error: Literal is only available in load instructions.");
