@@ -13,7 +13,7 @@
 char *data_processing[] = {"add", "adds", "sub", "subs", "cmp", "cmn", "neg", "negs",
                            "and", "ands", "bic", "bics", "eor", "orr", "eon", "orn", "tst", "movk", "movn",
                            "movz", "mov", "mvn", "madd", "msub", "mul", "mneg", NULL};
-char *branching[] = {"b", "b.cond", "br", NULL};
+char *branching[] = {"b", "br", "b.eq", "b.ne", "b.ge", "b.lt", "b.gt", "b.le", "b.al", NULL};
 char *sdts[] = {"str", "ldr", NULL};
 char *directives[] = {".int", NULL};
 
@@ -82,7 +82,7 @@ static void write_binary(FILE *output_file, ulong instruction)
   }
 }
 
-static void parse_instruction(FILE *output_file, symbol_table_t st, char *line)
+static void parse_instruction(FILE *output_file, symbol_table_t st, char *line, long *address)
 {
   char *label_end;
   while ((label_end = strchr(line, ':')) != NULL)
@@ -114,7 +114,7 @@ static void parse_instruction(FILE *output_file, symbol_table_t st, char *line)
   }
   else if (instruction_type(opcode, branching))
   {
-    binary_instruction = encode_branch(st, opcode, operands);
+    binary_instruction = encode_branch(st, opcode, operands, *address);
   }
   else if (instruction_type(opcode, directives))
   {
@@ -132,9 +132,12 @@ static void parse_instruction(FILE *output_file, symbol_table_t st, char *line)
 void second_pass(FILE *source_file, FILE *output_file, symbol_table_t st)
 {
   char line_buf[MAX_LINE_LENGTH];
+  long address = 0;
 
   while (fgets(line_buf, sizeof(line_buf), source_file))
   {
-    parse_instruction(output_file, st, line_buf);
+    printf("Parsing instruction: %s\n", line_buf);
+    parse_instruction(output_file, st, line_buf, &address);
+    address += INSTR_SIZE;
   }
 }

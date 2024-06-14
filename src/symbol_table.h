@@ -24,4 +24,6 @@ extern void symbol_table_free(symbol_table_t st);
 extern void symbol_table_append(symbol_table_t st, char *label, long address);
 // Finds a symbol in the symbol table and returns its address.
 extern long symbol_table_find(symbol_table_t st, char *label, int label_len);
+// Prints the symbol table.
+extern void print_symbol_table(symbol_table_t st);
 #endif

@@ -8,6 +8,19 @@
 char *arithmetic[] = {"add", "adds", "sub", "subs", NULL};
 char *logic[] = {"and", "bic", "orr", "orn", "eor", "eon", "ands", "bics", NULL};
 
+bool is_integer(const char *str, long *num) {
+    char *endptr;
+    *num = strtol(str, &endptr, 0); // Automatically handles both decimal and hex
+    return *endptr == '\0'; // Checks if the entire string was converted
+}
+
+char* get_condition_code(const char* str) {
+    if (strlen(str) <= 2) {
+        return ""; // Return an empty string if the input is too short
+    }
+    return (char *)(str + 2); // Return a pointer to the third character
+}
+
 static int index_of(char *opcode, char **array)
 {
   for (int i = 0; array[i] != NULL; i++)
@@ -155,19 +168,57 @@ ulong encode_dp(symbol_table_t st, char *opcode, char *operands)
   if (operands[0] != '\0')
   {
     fprintf(stderr, "Error: Extra operands after instruction\n");
-    exit(1);
+    exit(EXIT_FAILURE);
   }
   return instr;
 }
 
-ulong encode_sdt(symbol_table_t st, char *opcode, char *operands)
-{
-  return 0;
+ulong encode_sdt(symbol_table_t st, char *opcode, char *operands) {
+    return 0;
 }
 
-ulong encode_branch(symbol_table_t st, char *opcode, char *operands)
-{
-  return 0;
+ulong encode_branch(symbol_table_t st, char *opcode, char *operands, long address) {
+    ulong instr = 0;
+
+    if (strcmp(opcode, "b") == 0) {
+        ulong literal;
+        operands = finish_parse_operand(parse_literal(operands, &literal, st));
+        long offset = literal - address;
+        instr = set_value(instr, offset / 4, 0, 26);
+        instr = set_value(instr, 0x5, 26, 6); // opcode for unconditional branch
+    } else if (strcmp(opcode, "br") == 0) {
+        // br xn
+        bool xn_sf, xn_sp_used;
+        ulong xn;
+        operands = finish_parse_operand(parse_register(operands, &xn, &xn_sf, &xn_sp_used));
+        instr = set_value(instr, 0x0, 0, 5);
+        instr = set_value(instr, xn, 5, 5);
+        instr = set_value(instr, 0x3587c0, 10, 22); // opcode for register branch
+    } else {
+        // b.cond <literal>
+        // get the letters after the first 2 letters
+        char *condition = get_condition_code(opcode);
+        ulong literal;
+        operands = finish_parse_operand(parse_literal(operands, &literal, st));
+        printf("literal: %lu\n", literal);
+        printf("condition: %s\n", condition);
+        printf("operands: %s\n", operands);
+        long offset = literal - address;
+        int cond_code;
+        if (strcmp(condition, "eq") == 0) cond_code = 0x0;
+        else if (strcmp(condition, "ne") == 0) cond_code = 0x1;
+        else if (strcmp(condition, "ge") == 0) cond_code = 0xa;
+        else if (strcmp(condition, "lt") == 0) cond_code = 0xb;
+        else if (strcmp(condition, "gt") == 0) cond_code = 0xc;
+        else if (strcmp(condition, "le") == 0) cond_code = 0xd;
+        else if (strcmp(condition, "al") == 0) cond_code = 0xe;
+        instr = set_value(instr, cond_code, 0, 4);
+        instr = set_value(instr, 0x0, 4, 1);
+        instr = set_value(instr, offset / 4, 5, 19);
+        instr = set_value(instr, 0x54, 24, 8);
+    }
+
+    return instr;
 }
 
 ulong encode_directives(symbol_table_t st, char *opcode, char *operands)

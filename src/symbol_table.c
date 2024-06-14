@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include "symbol_table.h"
 #include "assert.h"
 
@@ -54,11 +55,20 @@ long symbol_table_find(symbol_table_t st, char *label, int label_len)
   for (int i = 0; i < st->len; i++)
   {
     if (
-        (label_len >= 0 && strncmp(label, st->elements[i].label, label_len)) ||
-        (label_len < 0 && strcmp(label, st->elements[i].label) == 0))
+        (label_len >= 0 && strncmp(label, st->elements[i].label, label_len) == 0) ||
+        (label_len < 0 && strcmp(label, st->elements[i].label) == 0)
+      )
     {
       return st->elements[i].address;
     }
   }
   return -1;
+}
+
+void print_symbol_table(symbol_table_t st)
+{
+  for (int i = 0; i < st->len; i++)
+  {
+    printf("%s: %ld\n", st->elements[i].label, st->elements[i].address);
+  }
 }
