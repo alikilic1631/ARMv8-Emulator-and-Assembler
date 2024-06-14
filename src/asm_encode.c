@@ -270,5 +270,16 @@ ulong encode_branch(symbol_table_t st, char *opcode, char *operands)
 
 ulong encode_directives(symbol_table_t st, char *opcode, char *operands)
 {
-  return 0;
+  int base = 0;
+  if (strncmp(operands, "0x", 2) == 0) {
+    base = 16;
+  }
+  ulong simm_value = strtoul(operands, &operands, base);
+
+  if (*operands != '\0' && *operands != '\n') {
+    fprintf(stderr, "Error: Unknown operands after directive.");
+    exit(1);
+  }
+
+  return simm_value;
 }
