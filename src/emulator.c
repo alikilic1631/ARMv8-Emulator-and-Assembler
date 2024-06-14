@@ -11,7 +11,7 @@
 #define SF_MASK 0xFFFFFFFF
 
 // Print unknown instruction error message and exit
-static void unknown_instr(emulstate *state, ulong instr)
+static void unknown_instr(emulstate state, ulong instr)
 {
   fprintf(stderr, "Error: Unrecognized instruction 0x%08lx\nState Dump:\n", instr);
   fprint_emulstate(stderr, state);
@@ -19,27 +19,32 @@ static void unknown_instr(emulstate *state, ulong instr)
 }
 
 // Create a new emulator state with default values
-emulstate make_emulstate()
+emulstate emulstate_init()
 {
-  emulstate state;
-  state.pc = 0;
-  state.pstate.negative = false;
-  state.pstate.zero = true; // (spec 1.1.1 - "initial value of PSTATE has the Z flag set")
-  state.pstate.carry = false;
-  state.pstate.overflow = false;
+  emulstate state = malloc(sizeof(struct emulstate));
+  state->pc = 0;
+  state->pstate.negative = false;
+  state->pstate.zero = true; // (spec 1.1.1 - "initial value of PSTATE has the Z flag set")
+  state->pstate.carry = false;
+  state->pstate.overflow = false;
   for (int i = 0; i <= GENERAL_REGS; i++)
   {
-    state.regs[i] = 0;
+    state->regs[i] = 0;
   }
   for (int i = 0; i < MAX_MEMORY; i++)
   {
-    state.memory[i] = 0;
+    state->memory[i] = 0;
   }
   return state;
 }
 
+void emulstate_free(emulstate state)
+{
+  free(state);
+}
+
 // Print emulator state to file
-void fprint_emulstate(FILE *fout, emulstate *state)
+void fprint_emulstate(FILE *fout, emulstate state)
 {
   // Registers
   fprintf(fout, "Registers:\n");
@@ -88,7 +93,7 @@ void fprint_emulstate(FILE *fout, emulstate *state)
 }
 
 // Execute a single emulation step
-bool emulstep(emulstate *state)
+bool emulstep(emulstate state)
 {
   ulong instr = load_mem(state, false, state->pc);
   // Custom HALT instruction (spec 1.9)
@@ -141,7 +146,7 @@ ulong get_value(ulong from, uint offset, uint size)
 }
 
 // Utility function to set a register value, and correct for 32/64 bit mode.
-void set_reg(emulstate *state, bool sf, byte rg, ullong value)
+void set_reg(emulstate state, bool sf, byte rg, ullong value)
 {
   if (rg > GENERAL_REGS)
   {
@@ -155,7 +160,7 @@ void set_reg(emulstate *state, bool sf, byte rg, ullong value)
   state->regs[(int)rg] = sf_checker(value, sf);
 }
 
-ullong get_reg(emulstate *state, bool sf, byte rg)
+ullong get_reg(emulstate state, bool sf, byte rg)
 {
   if (rg > GENERAL_REGS)
   {
@@ -165,7 +170,7 @@ ullong get_reg(emulstate *state, bool sf, byte rg)
   return sf_checker(state->regs[(int)rg], sf);
 }
 
-ullong load_mem(emulstate *state, bool sf, ulong address)
+ullong load_mem(emulstate state, bool sf, ulong address)
 {
   int size = 4;
   if (sf)
@@ -179,7 +184,7 @@ ullong load_mem(emulstate *state, bool sf, ulong address)
   return data;
 }
 
-void store_mem(emulstate *state, bool sf, ulong address, ullong value)
+void store_mem(emulstate state, bool sf, ulong address, ullong value)
 {
   int size = 4;
   if (sf)

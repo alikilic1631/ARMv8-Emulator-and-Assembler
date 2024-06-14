@@ -35,16 +35,17 @@ int main(int argc, char **argv)
 
   // Create emulator state, load memory from binary file, and run
   // emulation steps while HALT is not reached.
-  emulstate state = make_emulstate();      // initialise memory and registers
-  fread(state.memory, 1, MAX_MEMORY, fin); // we expect less than MAX_MEMORY to be writen, ignore return value
+  emulstate state = emulstate_init();       // initialise memory and registers
+  fread(state->memory, 1, MAX_MEMORY, fin); // we expect less than MAX_MEMORY to be writen, ignore return value
   fclose(fin);
 
-  while (emulstep(&state))
+  while (emulstep(state))
   { // keep running while no halt
   }
 
   // Finaly, print state
-  fprint_emulstate(fout, &state);
+  fprint_emulstate(fout, state);
   fclose(fout); // This is the end, so fclose(stdout) is fine
+  emulstate_free(state);
   return EXIT_SUCCESS;
 }

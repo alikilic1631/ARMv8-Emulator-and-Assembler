@@ -29,7 +29,7 @@ ulong sign_extend(ulong n, int sign_bit)
   return n;
 }
 
-bool exec_sdt_instr(emulstate *state, ulong raw)
+bool exec_sdt_instr(emulstate state, ulong raw)
 {
   bool sf = get_value(raw, 30, 1);
   bool L = true;

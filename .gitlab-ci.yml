@@ -19,21 +19,31 @@ stages:
     when: always
     paths:
       - armv8_testsuite/test/actual_results/
+  before_script:
+    - apt-get update && apt-get install valgrind -y
+    - cd ./armv8_testsuite
+    - ./get_toolchain.sh
+    - ./install
+    - cd ..
   script:
     - cd src
     - make
     - cd ../armv8_testsuite
-    - ./install
-    - ./get_toolchain.sh
     - ./run -p$TEST_FLAGS --toolchain ./arm-gnu-toolchain-13.2.Rel1-x86_64-aarch64-none-elf/bin/
-    - grep -q -e FAILED -e INCORRECT test/actual_results/results.json && exit 1 || exit 0
+    - grep -q -e FAILED -e INCORRECT test/actual_results/results.json && exit 1
+    - cd ..
+    - find -path "$VALGRIND_TESTS" -exec valgrind --leak-check=full --show-error-list=yes --error-exitcode=1 $BIN {} /dev/null \;
 
 emulate_testsuite:
   extends: .armv8_testsuite
   variables:
     TEST_FLAGS: E
+    BIN: ./src/emulate
+    VALGRIND_TESTS: ./armv8_testsuite/test/expected_results/general/*.bin
 
 assemble_testsuite:
   extends: .armv8_testsuite
   variables:
     TEST_FLAGS: A
+    BIN: ./src/assemble
+    VALGRIND_TESTS: ./armv8_testsuite/test/test_cases/general/*.s
