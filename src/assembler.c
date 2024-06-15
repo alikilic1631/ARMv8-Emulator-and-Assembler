@@ -48,21 +48,31 @@ static char *append(const char *str, const char *suffix)
 
 static char *split_and_add(const char *str, const char *middle)
 {
+  // char *result = malloc(strlen(str) + strlen(middle) + 1);
+  // strcpy(result, str);
+  // char *comma = strchr(result, ',');
+  // if (comma == NULL)
+  // {
+  //   fprintf(stderr, "Expected comma in string: %s\n", str);
+  //   exit(EXIT_FAILURE);
+  // }
+  // comma++;
+  // while (*comma == ' ')
+  // {
+  //   comma++;
+  // }
+  // strcpy(comma, middle);
+
+  // return result;
+
   char *result = malloc(strlen(str) + strlen(middle) + 1);
+  char *final = malloc(strlen(str) + strlen(middle) + 1);
   strcpy(result, str);
-  char *comma = strchr(result, ',');
-  if (comma == NULL)
-  {
-    fprintf(stderr, "Expected comma in string: %s\n", str);
-    exit(EXIT_FAILURE);
-  }
-  comma++;
-  while (*comma == ' ')
-  {
-    comma++;
-  }
-  strcpy(comma, middle);
-  return result;
+  char *token = strtok(result, ",");
+  strcpy(final, token);
+  strcat(final, middle);
+  strcat(final, result);
+  return final;
 }
 
 static void parse_labels(symbol_table_t st, long *address, char *line)
@@ -160,16 +170,16 @@ static void parse_instruction(FILE *output_file, symbol_table_t st, char *line, 
     }
     else if (strcmp(opcode, "neg") == 0) {
       if (operands[0] == 'x') {
-        binary_instruction = encode_dp(st, "sub", temp_str = split_and_add(operands, " xzr, "));
+        binary_instruction = encode_dp(st, "sub", temp_str = split_and_add(operands, ", xzr, "));
       } else {
-        binary_instruction = encode_dp(st, "sub", temp_str = split_and_add(operands, " wzr, "));
+        binary_instruction = encode_dp(st, "sub", temp_str = split_and_add(operands, ", wzr, "));
       }
     }
     else if (strcmp(opcode, "negs") == 0) {
       if (operands[0] == 'x') {
-        binary_instruction = encode_dp(st, "subs", temp_str = split_and_add(operands, " xzr, "));
+        binary_instruction = encode_dp(st, "subs", temp_str = split_and_add(operands, ", xzr, "));
       } else {
-        binary_instruction = encode_dp(st, "subs", temp_str = split_and_add(operands, " wzr, "));
+        binary_instruction = encode_dp(st, "subs", temp_str = split_and_add(operands, ", wzr, "));
       }
     }
     else if (strcmp(opcode, "tst") == 0) {
@@ -181,16 +191,16 @@ static void parse_instruction(FILE *output_file, symbol_table_t st, char *line, 
     }
     else if (strcmp(opcode, "mvn") == 0) {
       if (operands[0] == 'x') {
-        binary_instruction = encode_dp(st, "orn", temp_str = split_and_add(operands, " xzr, "));
+        binary_instruction = encode_dp(st, "orn", temp_str = split_and_add(operands, ", xzr, "));
       } else {
-        binary_instruction = encode_dp(st, "orn", temp_str = split_and_add(operands, " wzr, "));
+        binary_instruction = encode_dp(st, "orn", temp_str = split_and_add(operands, ", wzr, "));
       }
     }
     else if (strcmp(opcode, "mov") == 0) {
       if (operands[0] == 'x') {
-        binary_instruction = encode_dp(st, "orr", temp_str = split_and_add(operands, " xzr, "));
+        binary_instruction = encode_dp(st, "orr", temp_str = split_and_add(operands, ", xzr, "));
       } else {
-        binary_instruction = encode_dp(st, "orr", temp_str = split_and_add(operands, " wzr, "));
+        binary_instruction = encode_dp(st, "orr", temp_str = split_and_add(operands, ", wzr, "));
       }
     }
     else if (strcmp(opcode, "mul") == 0) {
