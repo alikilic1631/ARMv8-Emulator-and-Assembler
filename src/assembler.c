@@ -96,6 +96,7 @@ void first_pass(FILE *source_file, symbol_table_t st)
 
   while (fgets(line_buf, sizeof(line_buf), source_file))
   {
+    printf("first pass address: %ld\n", address);
     parse_labels(st, &address, line_buf);
   }
 
@@ -229,6 +230,7 @@ static void parse_instruction(FILE *output_file, symbol_table_t st, char *line, 
     fprintf(stderr, "Unknown opcode: %s\n", opcode);
     exit(EXIT_FAILURE);
   }
+  *address += INSTR_SIZE;
 
   write_binary(output_file, binary_instruction);
 }
@@ -245,7 +247,10 @@ void second_pass(FILE *source_file, FILE *output_file, symbol_table_t st)
     {
       break;
     }
+    if (line_buf[0] == '\0') // empty line
+      continue;
     parse_instruction(output_file, st, line_buf, &address);
-    address += INSTR_SIZE;
+    printf("address: %ld\n", address);
+    // address += INSTR_SIZE;
   }
 }

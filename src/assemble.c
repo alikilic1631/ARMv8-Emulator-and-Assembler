@@ -34,6 +34,7 @@ int main(int argc, char **argv)
   rewind(fin);
   print_symbol_table(symbol_table);
   second_pass(fin, fout, symbol_table);
+  print_symbol_table(symbol_table);
   fclose(fin);
   fclose(fout);
 
