@@ -42,6 +42,8 @@ static ulong set_value(ulong base, ulong value, uint offset, uint size)
 
 ulong encode_dp(symbol_table_t st, char *opcode, char *operands)
 {
+  printf("opcode: %s\n", opcode);
+  printf("operands: %s\n", operands);
   ulong instr = 0;
   bool r1_sf, r1_sp_used;
   ulong r1;
@@ -165,6 +167,12 @@ ulong encode_dp(symbol_table_t st, char *opcode, char *operands)
       instr = set_value(instr, shift_type, 22, 2);
     }
   }
+  else
+  {
+    fprintf(stderr, "Error: Unknown opcode\n");
+    exit(1);
+  }
+
   if (operands[0] != '\0')
   {
     fprintf(stderr, "Error: Extra operands after instruction\n");
