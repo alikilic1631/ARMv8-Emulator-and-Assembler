@@ -8,7 +8,7 @@
 char *arithmetic[] = {"add", "adds", "sub", "subs", NULL};
 char *logic[] = {"and", "bic", "orr", "orn", "eor", "eon", "ands", "bics", NULL};
 char *movs[] = {"movn", "movz", "movk", NULL};
-// remaining madd, msub
+char *muls[] = {"madd", "msub", NULL};
 
 bool is_integer(const char *str, long *num) {
     char *endptr;
@@ -221,6 +221,39 @@ ulong encode_dp(symbol_table_t st, char *opcode, char *operands)
       }
       instr = set_value(instr, r1_sf, 31, 1);
     }
+  }
+  else if (index_of(opcode, muls) >= 0) {
+    bool r2_sf, r2_sp_used;
+    ulong r2;
+    operands = finish_parse_operand(parse_register(operands, &r2, &r2_sf, &r2_sp_used));
+
+    bool r3_sf, r3_sp_used;
+    ulong r3;
+    operands = finish_parse_operand(parse_register(operands, &r3, &r3_sf, &r3_sp_used));
+
+    bool r4_sf, r4_sp_used;
+    ulong r4;
+    operands = finish_parse_operand(parse_register(operands, &r4, &r4_sf, &r4_sp_used));
+
+    instr = set_value(instr, r1, 0, 5);
+    instr = set_value(instr, r2, 5, 5);
+    instr = set_value(instr, r4, 10, 5);
+    instr = set_value(instr, strcmp(opcode, "msub") == 0, 15, 1);
+    instr = set_value(instr, r3, 16, 5);
+    instr = set_value(instr, 0xd8, 21, 10);
+
+    if (r1_sp_used || r2_sp_used || r3_sp_used)
+    {
+      fprintf(stderr, "Error: Cannot use SP as register in multiply\n");
+      exit(1);
+    }
+
+    if (r1_sf != r2_sf || r1_sf != r3_sf)
+    {
+      fprintf(stderr, "Error: Register sizes must match in multiply\n");
+      exit(1);
+    }
+    instr = set_value(instr, r1_sf, 31, 1);
   }
   else
   {
