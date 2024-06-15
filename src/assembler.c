@@ -30,17 +30,6 @@ static bool instruction_type(const char *instr, char **array)
   return false;
 }
 
-// void prepend(char *str, const char *prefix) {
-//     int str_len = strlen(str);
-//     int prefix_len = strlen(prefix);
-//     for (int i = str_len; i >= 0; i--) {
-//         *(str + i + prefix_len) = *(str + i);
-//     }
-//     for (int i = 0; i < prefix_len; i++) {
-//         *(str + i) = *(prefix + i);
-//     }
-// }
-
 static char *prepend(const char *prefix, const char *str)
 {
   char *result = malloc(strlen(prefix) + strlen(str) + 1);
@@ -49,7 +38,6 @@ static char *prepend(const char *prefix, const char *str)
   return result;
 }
 
-// function to add a string to end of a char pointer
 static char *append(const char *str, const char *suffix)
 {
   char *result = malloc(strlen(str) + strlen(suffix) + 1);
@@ -58,7 +46,6 @@ static char *append(const char *str, const char *suffix)
   return result;
 }
 
-// function that splits a string given by a char pointer by the comma and adds a given string to the middle
 static char *split_and_add(const char *str, const char *middle)
 {
   char *result = malloc(strlen(str) + strlen(middle) + 1);
@@ -157,7 +144,6 @@ static void parse_instruction(FILE *output_file, symbol_table_t st, char *line, 
   {
     char *temp_str;
     if (strcmp(opcode, "cmp") == 0) {
-      // prepend("xzr, ", operands);
       if (operands[0] == 'x') {
         binary_instruction = encode_dp(st, "subs", temp_str = prepend("xzr, ", operands));
       } else {
@@ -165,30 +151,63 @@ static void parse_instruction(FILE *output_file, symbol_table_t st, char *line, 
       }
     }
     else if (strcmp(opcode, "cmn") == 0) { 
-      // prepend("xzr, ", operands);
       if (operands[0] == 'x') {
         binary_instruction = encode_dp(st, "adds", temp_str = prepend("xzr, ", operands));
       } else {
         binary_instruction = encode_dp(st, "adds", temp_str = prepend("wzr, ", operands));
       }
     }
-    else if (strcmp(opcode, "neg") == 0) binary_instruction = encode_dp(st, "sub", temp_str = split_and_add(operands, " xzr, "));
-    else if (strcmp(opcode, "negs") == 0) binary_instruction = encode_dp(st, "subs", temp_str = split_and_add(operands, " xzr, "));
+    else if (strcmp(opcode, "neg") == 0) {
+      if (operands[0] == 'x') {
+        binary_instruction = encode_dp(st, "sub", temp_str = split_and_add(operands, " xzr, "));
+      } else {
+        binary_instruction = encode_dp(st, "sub", temp_str = split_and_add(operands, " wzr, "));
+      }
+    }
+    else if (strcmp(opcode, "negs") == 0) {
+      if (operands[0] == 'x') {
+        binary_instruction = encode_dp(st, "subs", temp_str = split_and_add(operands, " xzr, "));
+      } else {
+        binary_instruction = encode_dp(st, "subs", temp_str = split_and_add(operands, " wzr, "));
+      }
+    }
     else if (strcmp(opcode, "tst") == 0) {
-      // prepend("xzr, ", operands);
       if (operands[0] == 'x') {
         binary_instruction = encode_dp(st, "ands", temp_str = prepend("xzr, ", operands));
       } else {
         binary_instruction = encode_dp(st, "ands", temp_str = prepend("wzr, ", operands));
       }
     }
-    else if (strcmp(opcode, "mvn") == 0) binary_instruction = encode_dp(st, "orn", temp_str = split_and_add(operands, " xzr, "));
-    else if (strcmp(opcode, "mov") == 0) binary_instruction = encode_dp(st, "orr", temp_str = split_and_add(operands, " xzr, "));
-    else if (strcmp(opcode, "mul") == 0) binary_instruction = encode_dp(st, "madd", temp_str = append(operands, ", xzr"));
-    else if (strcmp(opcode, "mneg") == 0) binary_instruction = encode_dp(st, "msub", temp_str = append(operands, ", xzr"));
+    else if (strcmp(opcode, "mvn") == 0) {
+      if (operands[0] == 'x') {
+        binary_instruction = encode_dp(st, "orn", temp_str = split_and_add(operands, " xzr, "));
+      } else {
+        binary_instruction = encode_dp(st, "orn", temp_str = split_and_add(operands, " wzr, "));
+      }
+    }
+    else if (strcmp(opcode, "mov") == 0) {
+      if (operands[0] == 'x') {
+        binary_instruction = encode_dp(st, "orr", temp_str = split_and_add(operands, " xzr, "));
+      } else {
+        binary_instruction = encode_dp(st, "orr", temp_str = split_and_add(operands, " wzr, "));
+      }
+    }
+    else if (strcmp(opcode, "mul") == 0) {
+      if (operands[0] == 'x') {
+        binary_instruction = encode_dp(st, "madd", temp_str = append(operands, ", xzr"));
+      } else {
+        binary_instruction = encode_dp(st, "madd", temp_str = append(operands, ", wzr"));
+      }
+    }
+    else if (strcmp(opcode, "mneg") == 0) {
+      if (operands[0] == 'x') {
+        binary_instruction = encode_dp(st, "msub", temp_str = append(operands, ", xzr"));
+      } else {
+        binary_instruction = encode_dp(st, "msub", temp_str = append(operands, ", wzr"));
+      }
+    }
     free(temp_str);
   }
-
   else if (instruction_type(opcode, data_processing))
   {
     binary_instruction = encode_dp(st, opcode, operands);
