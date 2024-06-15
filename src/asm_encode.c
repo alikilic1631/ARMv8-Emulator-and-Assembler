@@ -107,6 +107,36 @@ ulong encode_dp(symbol_table_t st, char *opcode, char *operands)
       }
       instr = set_value(instr, r1_sf, 31, 1);
     }
+    else {
+      bool r3_sf, r3_sp_used;
+      ulong r3;
+      operands = finish_parse_operand(parse_register(operands, &r3, &r3_sf, &r3_sp_used));
+      instr = set_value(instr, r3, 16, 5);
+      instr = set_value(instr, 0x5, 25, 4);
+      instr = set_value(instr, r3_sf, 31, 1);
+      instr = set_value(instr, 0x8, 21, 4);
+
+      if (operands[0] != '\0')
+      {
+        if (strncmp(operands, "lsl #", 5) == 0)
+        {
+          instr = set_value(instr, 0x0, 22, 2);
+        }
+        else if (strncmp(operands, "lsr #", 5) == 0) {
+          instr = set_value(instr, 0x1, 22, 2);
+        }
+        else if (strncmp(operands, "asr #", 5) == 0) {
+          instr = set_value(instr, 0x2, 22, 2);
+        }
+        else {
+          fprintf(stderr, "Error: Only LSL, LSR, ASR shift supported for register arithmetic\n");
+          exit(1);
+        }
+        ulong shift;
+        operands = finish_parse_operand(parse_imm(operands + 5, &shift));
+        instr = set_value(instr, shift, 10, 6);
+      }
+    }
   }
   else if ((logic_idx = index_of(opcode, logic)) >= 0)
   {
