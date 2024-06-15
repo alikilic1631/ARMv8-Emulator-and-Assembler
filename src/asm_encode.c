@@ -78,9 +78,15 @@ ulong encode_dp(symbol_table_t st, char *opcode, char *operands)
         }
       }
 
-      if ((!r1_sp_used && r1 == MAX_REG) || (!r2_sp_used && r2 == MAX_REG))
+      if (!r2_sp_used && r2 == MAX_REG)
       {
-        fprintf(stderr, "Error: Cannot use ZR as register in immediate arithmetic\n");
+        fprintf(stderr, "Error: Cannot use ZR as Rn in immediate arithmetic\n");
+        exit(1);
+      }
+      // adds and subs are allowed to use ZR for Rd
+      if (arith_idx != 1 && arith_idx != 3 && !r1_sp_used && r1 == MAX_REG)
+      {
+        fprintf(stderr, "Error: Cannot use ZR as Rd in immediate arithmetic without setting flags\n");
         exit(1);
       }
       if (r1_sf != r2_sf)
