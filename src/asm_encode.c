@@ -381,7 +381,7 @@ ulong encode_sdt(symbol_table_t st, char *opcode, char *operands)
       exit(1);
     }
     parse_literal(operands, &literal_value, st);
-    instr = set_value(instr, literal_value, 5, 19);
+    instr = set_value(instr, (literal_value / 4), 5, 19);
   }
 
   if (rt_sf) {
