@@ -155,36 +155,38 @@ static void parse_instruction(FILE *output_file, symbol_table_t st, char *line, 
   ulong binary_instruction;
   if (instruction_type(opcode, dp_aliases)) 
   {
+    char *temp_str;
     if (strcmp(opcode, "cmp") == 0) {
       // prepend("xzr, ", operands);
       if (operands[0] == 'x') {
-        binary_instruction = encode_dp(st, "subs", prepend("xzr, ", operands));
+        binary_instruction = encode_dp(st, "subs", temp_str = prepend("xzr, ", operands));
       } else {
-        binary_instruction = encode_dp(st, "subs", prepend("wzr, ", operands));
+        binary_instruction = encode_dp(st, "subs", temp_str = prepend("wzr, ", operands));
       }
     }
     else if (strcmp(opcode, "cmn") == 0) { 
       // prepend("xzr, ", operands);
       if (operands[0] == 'x') {
-        binary_instruction = encode_dp(st, "adds", prepend("xzr, ", operands));
+        binary_instruction = encode_dp(st, "adds", temp_str = prepend("xzr, ", operands));
       } else {
-        binary_instruction = encode_dp(st, "adds", prepend("wzr, ", operands));
+        binary_instruction = encode_dp(st, "adds", temp_str = prepend("wzr, ", operands));
       }
     }
-    else if (strcmp(opcode, "neg") == 0) binary_instruction = encode_dp(st, "sub", split_and_add(operands, " xzr, "));
-    else if (strcmp(opcode, "negs") == 0) binary_instruction = encode_dp(st, "subs", split_and_add(operands, " xzr, "));
+    else if (strcmp(opcode, "neg") == 0) binary_instruction = encode_dp(st, "sub", temp_str = split_and_add(operands, " xzr, "));
+    else if (strcmp(opcode, "negs") == 0) binary_instruction = encode_dp(st, "subs", temp_str = split_and_add(operands, " xzr, "));
     else if (strcmp(opcode, "tst") == 0) {
       // prepend("xzr, ", operands);
       if (operands[0] == 'x') {
-        binary_instruction = encode_dp(st, "ands", prepend("xzr, ", operands));
+        binary_instruction = encode_dp(st, "ands", temp_str = prepend("xzr, ", operands));
       } else {
-        binary_instruction = encode_dp(st, "ands", prepend("wzr, ", operands));
+        binary_instruction = encode_dp(st, "ands", temp_str = prepend("wzr, ", operands));
       }
     }
-    else if (strcmp(opcode, "mvn") == 0) binary_instruction = encode_dp(st, "orn", split_and_add(operands, " xzr, "));
-    else if (strcmp(opcode, "mov") == 0) binary_instruction = encode_dp(st, "orr", split_and_add(operands, " xzr, "));
-    else if (strcmp(opcode, "mul") == 0) binary_instruction = encode_dp(st, "madd", append(operands, ", xzr"));
-    else if (strcmp(opcode, "mneg") == 0) binary_instruction = encode_dp(st, "msub", append(operands, ", xzr"));
+    else if (strcmp(opcode, "mvn") == 0) binary_instruction = encode_dp(st, "orn", temp_str = split_and_add(operands, " xzr, "));
+    else if (strcmp(opcode, "mov") == 0) binary_instruction = encode_dp(st, "orr", temp_str = split_and_add(operands, " xzr, "));
+    else if (strcmp(opcode, "mul") == 0) binary_instruction = encode_dp(st, "madd", temp_str = append(operands, ", xzr"));
+    else if (strcmp(opcode, "mneg") == 0) binary_instruction = encode_dp(st, "msub", temp_str = append(operands, ", xzr"));
+    free(temp_str);
   }
 
   else if (instruction_type(opcode, data_processing))
