@@ -5,8 +5,6 @@
 #include "asm_encode.h"
 #include "parse_utils.h"
 
-// failing tests: shifts/ror2, general/dummy_ldr, general/example, general/ldr_lit-02-03, general/str01, general/loop01, general/ldr05-6-7-8-10.
-
 char *arithmetic[] = {"add", "adds", "sub", "subs", NULL};
 char *logic[] = {"and", "bic", "orr", "orn", "eor", "eon", "ands", "bics", NULL};
 char *movs[] = {"movn", "movz", "movk", NULL};
@@ -114,44 +112,35 @@ ulong encode_dp(symbol_table_t st, char *opcode, char *operands)
       }
       instr = set_value(instr, r1_sf, 31, 1);
     }
-    else
-    {
+    else {
       bool r3_sf, r3_sp_used;
       ulong r3;
       operands = finish_parse_operand(parse_register(operands, &r3, &r3_sf, &r3_sp_used));
       instr = set_value(instr, r3, 16, 5);
-
-      if (r1_sp_used || r2_sp_used || r3_sp_used)
-      {
-        fprintf(stderr, "Error: Cannot use SP as register in arithmetic\n");
-        exit(1);
-      }
-
-      if (r1_sf != r2_sf || r1_sf != r3_sf)
-      {
-        fprintf(stderr, "Error: Register sizes must match in arithmetic\n");
-        exit(1);
-      }
+      instr = set_value(instr, 0x5, 25, 4);
+      instr = set_value(instr, r3_sf, 31, 1);
+      instr = set_value(instr, 0x8, 21, 4);
 
       if (operands[0] != '\0')
       {
-        ulong opr;
-        if (strncmp(operands, "lsl", 3) == 0) {
-          opr = 0;
-        } else if (strncmp(operands, "lsr", 3) == 0) {
-          opr = 1;
-        } else if (strncmp(operands, "asr", 3) == 0) {
-          opr = 2;
+        if (strncmp(operands, "lsl #", 5) == 0)
+        {
+          instr = set_value(instr, 0x0, 22, 2);
         }
-        instr = set_value(instr, opr, 22, 2);
+        else if (strncmp(operands, "lsr #", 5) == 0) {
+          instr = set_value(instr, 0x1, 22, 2);
+        }
+        else if (strncmp(operands, "asr #", 5) == 0) {
+          instr = set_value(instr, 0x2, 22, 2);
+        }
+        else {
+          fprintf(stderr, "Error: Only LSL, LSR, ASR shift supported for register arithmetic\n");
+          exit(1);
+        }
         ulong shift;
         operands = finish_parse_operand(parse_imm(operands + 5, &shift));
         instr = set_value(instr, shift, 10, 6);
       }
-
-      instr = set_value(instr, 0x0, 21, 1);
-      instr = set_value(instr, 0x0b, 24, 5);
-      instr = set_value(instr, r1_sf, 31, 1);
     }
   }
   else if ((logic_idx = index_of(opcode, logic)) >= 0)
