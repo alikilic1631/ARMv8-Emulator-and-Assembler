@@ -7,6 +7,8 @@
 
 char *arithmetic[] = {"add", "adds", "sub", "subs", NULL};
 char *logic[] = {"and", "bic", "orr", "orn", "eor", "eon", "ands", "bics", NULL};
+char *movs[] = {"movn", "movz", "movk", NULL};
+// remaining madd, msub
 
 bool is_integer(const char *str, long *num) {
     char *endptr;
@@ -165,6 +167,59 @@ ulong encode_dp(symbol_table_t st, char *opcode, char *operands)
       operands = finish_parse_operand(parse_imm(operands + 5, &shift_imm));
       instr = set_value(instr, shift_imm, 10, 6);
       instr = set_value(instr, shift_type, 22, 2);
+    }
+  }
+  else if (index_of(opcode, movs) >= 0)
+  {
+    instr = set_value(instr, r1, 0, 5);
+    int mov_idx;
+    if (strcmp(opcode, "movn") == 0)
+    {
+      mov_idx = 0;
+    }
+    else if (strcmp(opcode, "movz") == 0)
+    {
+      mov_idx = 2;
+    }
+    else if (strcmp(opcode, "movk") == 0)
+    {
+      mov_idx = 3;
+    }
+    instr = set_value(instr, mov_idx, 29, 2);
+
+    if (operands[0] == '#')
+    {
+      // 0b100101 for wide move
+      instr = set_value(instr, 0x25, 23, 6);
+
+      ulong imm;
+      operands = finish_parse_operand(parse_imm(operands + 1, &imm));
+      instr = set_value(instr, imm, 5, 16);
+
+      if (operands[0] != '\0')
+      {
+        if (strncmp(operands, "lsl #", 5) != 0)
+        {
+          fprintf(stderr, "Error: Only LSL shift supported for immediate mov\n");
+          exit(1);
+        }
+        ulong shift;
+        operands = finish_parse_operand(parse_imm(operands + 5, &shift));
+        ulong hw = shift / 16;
+        if (!r1_sf && (hw != 0 || hw != 1))
+        {
+          fprintf(stderr, "Error: Only LSL #0 or #16 supported for immediate mov on 32-bit registers\n");
+          exit(1);
+        }
+        instr = set_value(instr, hw, 21, 2);
+      }
+
+      if (!r1_sp_used && r1 == MAX_REG)
+      {
+        fprintf(stderr, "Error: Cannot use ZR as register in immediate mov\n");
+        exit(1);
+      }
+      instr = set_value(instr, r1_sf, 31, 1);
     }
   }
   else

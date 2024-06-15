@@ -10,13 +10,10 @@
 #define MAX_LINE_LENGTH 256
 #define INSTR_SIZE 4
 
-// char *data_processing[] = {"add", "adds", "sub", "subs", "cmp", "cmn", "neg", "negs",
-//                            "and", "ands", "bic", "bics", "eor", "orr", "eon", "orn", "tst", "movk", "movn",
-//                            "movz", "mov", "mvn", "madd", "msub", "mul", "mneg", NULL};
-char *data_processing[] = {"add", "adds", "sub", "subs", "negs",
+char *data_processing[] = {"add", "adds", "sub", "subs",
                             "and", "ands", "bic", "bics", "eor", "orr", "eon", "orn", "movk", "movn",
                             "movz", "madd", "msub", NULL};
-char *dp_aliases[] = {"cmp", "cmn", "neg", "tst", "mvn", "mov", "mul", "mneg", NULL};
+char *dp_aliases[] = {"cmp", "cmn", "neg", "negs", "tst", "mvn", "mov", "mul", "mneg", NULL};
 char *branching[] = {"b", "br", "b.eq", "b.ne", "b.ge", "b.lt", "b.gt", "b.le", "b.al", NULL};
 char *sdts[] = {"str", "ldr", NULL};
 char *directives[] = {".int", NULL};
