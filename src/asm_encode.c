@@ -206,7 +206,7 @@ ulong encode_dp(symbol_table_t st, char *opcode, char *operands)
         ulong shift;
         operands = finish_parse_operand(parse_imm(operands + 5, &shift));
         ulong hw = shift / 16;
-        if (!r1_sf && (hw != 0 || hw != 1))
+        if (!r1_sf && (hw != 0 && hw != 1))
         {
           fprintf(stderr, "Error: Only LSL #0 or #16 supported for immediate mov on 32-bit registers\n");
           exit(1);
@@ -421,11 +421,6 @@ ulong encode_directives(symbol_table_t st, char *opcode, char *operands)
     base = 16;
   }
   ulong simm_value = strtoul(operands, &operands, base);
-
-  if (*operands != '\0' && *operands != '\n') {
-    fprintf(stderr, "Error: Unknown operands after directive.");
-    exit(1);
-  }
 
   return simm_value;
 }

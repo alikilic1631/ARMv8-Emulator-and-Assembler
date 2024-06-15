@@ -186,6 +186,7 @@ static void parse_instruction(FILE *output_file, symbol_table_t st, char *line, 
     else if (strcmp(opcode, "mul") == 0) binary_instruction = encode_dp(st, "madd", append(operands, ", xzr"));
     else if (strcmp(opcode, "mneg") == 0) binary_instruction = encode_dp(st, "msub", append(operands, ", xzr"));
   }
+
   else if (instruction_type(opcode, data_processing))
   {
     binary_instruction = encode_dp(st, opcode, operands);
