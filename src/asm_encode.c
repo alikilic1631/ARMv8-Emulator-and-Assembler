@@ -304,7 +304,7 @@ ulong encode_dp(symbol_table_t st, char *opcode, char *operands)
   return instr;
 }
 
-ulong encode_sdt(symbol_table_t st, char *opcode, char *operands)
+ulong encode_sdt(symbol_table_t st, char *opcode, char *operands, long address)
 {
   ulong instr = 0;
   bool rt_sf, rt_sp_used, xn_sf, xn_sp_used, xm_sf, xm_sp_used;
@@ -381,7 +381,8 @@ ulong encode_sdt(symbol_table_t st, char *opcode, char *operands)
       exit(1);
     }
     parse_literal(operands, &literal_value, st);
-    instr = set_value(instr, (literal_value / 4), 5, 19);
+    long offset = (literal_value - address) / 4;
+    instr = set_value(instr, (offset), 5, 19);
   }
 
   if (rt_sf) {

@@ -225,7 +225,7 @@ static void parse_instruction(FILE *output_file, symbol_table_t st, char *line, 
   }
   else if (instruction_type(opcode, sdts))
   {
-    binary_instruction = encode_sdt(st, opcode, operands);
+    binary_instruction = encode_sdt(st, opcode, operands, *address);
   }
   else if (instruction_type(opcode, branching))
   {
