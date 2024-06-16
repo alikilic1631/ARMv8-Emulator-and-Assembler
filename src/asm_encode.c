@@ -10,11 +10,13 @@ char *logic[] = {"and", "bic", "orr", "orn", "eor", "eon", "ands", "bics", NULL}
 char *movs[] = {"movn", "movz", "movk", NULL};
 char *muls[] = {"madd", "msub", NULL};
 
-char* get_condition_code(const char* str) {
-    if (strlen(str) <= 2) {
-        return ""; // Return an empty string if the input is too short
-    }
-    return (char *)(str + 2); // Return a pointer to the third character
+char *get_condition_code(const char *str)
+{
+  if (strlen(str) <= 2)
+  {
+    return ""; // Return an empty string if the input is too short
+  }
+  return (char *)(str + 2); // Return a pointer to the third character
 }
 
 static int index_of(char *opcode, char **array)
@@ -92,11 +94,6 @@ ulong encode_dp(symbol_table_t st, char *opcode, char *operands)
         fprintf(stderr, "Error: Cannot use ZR as register in immediate arithmetic\n");
         exit(1);
       }
-      if (arith_idx != 1 && arith_idx != 3 && !r1_sp_used && r1 == MAX_REG)
-      {
-        fprintf(stderr, "Error: Cannot use ZR as Rd in immediate arithmetic without setting flags\n");
-        exit(1);
-      }
       if (r1_sf != r2_sf)
       {
         fprintf(stderr, "Error: Register sizes must match in immediate arithmetic\n");
@@ -104,7 +101,8 @@ ulong encode_dp(symbol_table_t st, char *opcode, char *operands)
       }
       instr = set_value(instr, r1_sf, 31, 1);
     }
-    else {
+    else
+    {
       bool r3_sf, r3_sp_used;
       ulong r3;
       operands = finish_parse_operand(parse_register(operands, &r3, &r3_sf, &r3_sp_used));
@@ -119,13 +117,16 @@ ulong encode_dp(symbol_table_t st, char *opcode, char *operands)
         {
           instr = set_value(instr, 0x0, 22, 2);
         }
-        else if (strncmp(operands, "lsr #", 5) == 0) {
+        else if (strncmp(operands, "lsr #", 5) == 0)
+        {
           instr = set_value(instr, 0x1, 22, 2);
         }
-        else if (strncmp(operands, "asr #", 5) == 0) {
+        else if (strncmp(operands, "asr #", 5) == 0)
+        {
           instr = set_value(instr, 0x2, 22, 2);
         }
-        else {
+        else
+        {
           fprintf(stderr, "Error: Only LSL, LSR, ASR shift supported for register arithmetic\n");
           exit(1);
         }
@@ -249,7 +250,8 @@ ulong encode_dp(symbol_table_t st, char *opcode, char *operands)
       instr = set_value(instr, r1_sf, 31, 1);
     }
   }
-  else if (index_of(opcode, muls) >= 0) {
+  else if (index_of(opcode, muls) >= 0)
+  {
     bool r2_sf, r2_sp_used;
     ulong r2;
     operands = finish_parse_operand(parse_register(operands, &r2, &r2_sf, &r2_sp_used));
@@ -309,13 +311,16 @@ ulong encode_sdt(symbol_table_t st, char *opcode, char *operands, long address)
 
   instr = set_value(instr, rt, 0, 5);
 
-  if (operands[0] == '[') {
+  if (operands[0] == '[')
+  {
     is_literal = false;
     operands++;
     operands = parse_register(operands, &xn, &xn_sf, &xn_sp_used);
-    
-    if (operands[0] == ']') {
-      if (operands[1] == ',') {
+
+    if (operands[0] == ']')
+    {
+      if (operands[1] == ',')
+      {
         // post-indexed
         instr = set_value(instr, 1, 10, 1);
         operands++;
@@ -324,50 +329,60 @@ ulong encode_sdt(symbol_table_t st, char *opcode, char *operands, long address)
         parse_simm(operands, &simm_value);
         instr = set_value(instr, simm_value, 12, 9);
       }
-      else {
+      else
+      {
         // zero unsigned offset
         instr = set_value(instr, 1, 24, 1);
       }
     }
-    else if (operands[0] == ',') {
+    else if (operands[0] == ',')
+    {
       operands = finish_parse_operand(operands);
-      if (operands[0] != '#') {
+      if (operands[0] != '#')
+      {
         // register offset
         instr = set_value(instr, 1, 21, 1);
         instr = set_value(instr, 0xD, 11, 4);
         operands = parse_register(operands, &xm, &xm_sf, &xm_sp_used);
         instr = set_value(instr, xm, 16, 5);
       }
-      else {
+      else
+      {
         int counter = 1;
-        for (char *temp = operands; *temp != ']'; temp++) {
+        for (char *temp = operands; *temp != ']'; temp++)
+        {
           counter++;
         }
-        if (operands[counter] == '!') {
+        if (operands[counter] == '!')
+        {
           // pre-indexed
           instr = set_value(instr, 0x3, 10, 2);
           operands++;
           parse_simm(operands, &simm_value);
           instr = set_value(instr, simm_value, 12, 9);
         }
-        else {
+        else
+        {
           // unsigned offset
           instr = set_value(instr, 1, 24, 1);
           operands++;
           parse_imm(operands, &imm_value);
-          if (rt_sf) {
+          if (rt_sf)
+          {
             instr = set_value(instr, (imm_value / 8), 10, 12);
           }
-          else {
+          else
+          {
             instr = set_value(instr, (imm_value / 4), 10, 12);
           }
         }
       }
     }
   }
-  else {
+  else
+  {
     // load from literal
-    if (strcmp(opcode, "ldr") != 0) 
+    if (strcmp(opcode, "ldr") != 0)
     {
       fprintf(stderr, "Error: Literal is only available in load instructions.");
       exit(1);
@@ -377,19 +392,20 @@ ulong encode_sdt(symbol_table_t st, char *opcode, char *operands, long address)
     instr = set_value(instr, (offset), 5, 19);
   }
 
-  if (rt_sf) {
+  if (rt_sf)
+  {
     instr = set_value(instr, 1, 30, 1);
   }
 
   instr = set_value(instr, 0x3, 27, 2);
 
-  if (!is_literal) 
+  if (!is_literal)
   {
     instr = set_value(instr, 1, 31, 1);
     instr = set_value(instr, 1, 29, 1);
     instr = set_value(instr, xn, 5, 5);
 
-    if (strcmp(opcode, "ldr") == 0) 
+    if (strcmp(opcode, "ldr") == 0)
     {
       instr = set_value(instr, 1, 22, 1);
     }
@@ -398,51 +414,65 @@ ulong encode_sdt(symbol_table_t st, char *opcode, char *operands, long address)
   return instr;
 }
 
-ulong encode_branch(symbol_table_t st, char *opcode, char *operands, long address) {
-    ulong instr = 0;
+ulong encode_branch(symbol_table_t st, char *opcode, char *operands, long address)
+{
+  ulong instr = 0;
 
-    if (strcmp(opcode, "b") == 0) {
-        ulong literal;
-        operands = finish_parse_operand(parse_literal(operands, &literal, st));
-        long offset = literal - address;
-        instr = set_value(instr, offset / 4, 0, 26);
-        instr = set_value(instr, 0x5, 26, 6); // opcode for unconditional branch
-    } else if (strcmp(opcode, "br") == 0) {
-        // br xn
-        bool xn_sf, xn_sp_used;
-        ulong xn;
-        operands = finish_parse_operand(parse_register(operands, &xn, &xn_sf, &xn_sp_used));
-        instr = set_value(instr, 0x0, 0, 5);
-        instr = set_value(instr, xn, 5, 5);
-        instr = set_value(instr, 0x3587c0, 10, 22); // opcode for register branch
-    } else {
-        // b.cond <literal>
-        // get the letters after the first 2 letters
-        char *condition = get_condition_code(opcode);
-        ulong literal;
-        operands = finish_parse_operand(parse_literal(operands, &literal, st));
-        long offset = literal - address;
-        int cond_code;
-        if (strcmp(condition, "eq") == 0) cond_code = 0x0;
-        else if (strcmp(condition, "ne") == 0) cond_code = 0x1;
-        else if (strcmp(condition, "ge") == 0) cond_code = 0xa;
-        else if (strcmp(condition, "lt") == 0) cond_code = 0xb;
-        else if (strcmp(condition, "gt") == 0) cond_code = 0xc;
-        else if (strcmp(condition, "le") == 0) cond_code = 0xd;
-        else if (strcmp(condition, "al") == 0) cond_code = 0xe;
-        instr = set_value(instr, cond_code, 0, 4);
-        instr = set_value(instr, 0x0, 4, 1);
-        instr = set_value(instr, offset / 4, 5, 19);
-        instr = set_value(instr, 0x54, 24, 8);
-    }
+  if (strcmp(opcode, "b") == 0)
+  {
+    ulong literal;
+    operands = finish_parse_operand(parse_literal(operands, &literal, st));
+    long offset = literal - address;
+    instr = set_value(instr, offset / 4, 0, 26);
+    instr = set_value(instr, 0x5, 26, 6); // opcode for unconditional branch
+  }
+  else if (strcmp(opcode, "br") == 0)
+  {
+    // br xn
+    bool xn_sf, xn_sp_used;
+    ulong xn;
+    operands = finish_parse_operand(parse_register(operands, &xn, &xn_sf, &xn_sp_used));
+    instr = set_value(instr, 0x0, 0, 5);
+    instr = set_value(instr, xn, 5, 5);
+    instr = set_value(instr, 0x3587c0, 10, 22); // opcode for register branch
+  }
+  else
+  {
+    // b.cond <literal>
+    // get the letters after the first 2 letters
+    char *condition = get_condition_code(opcode);
+    ulong literal;
+    operands = finish_parse_operand(parse_literal(operands, &literal, st));
+    long offset = literal - address;
+    int cond_code;
+    if (strcmp(condition, "eq") == 0)
+      cond_code = 0x0;
+    else if (strcmp(condition, "ne") == 0)
+      cond_code = 0x1;
+    else if (strcmp(condition, "ge") == 0)
+      cond_code = 0xa;
+    else if (strcmp(condition, "lt") == 0)
+      cond_code = 0xb;
+    else if (strcmp(condition, "gt") == 0)
+      cond_code = 0xc;
+    else if (strcmp(condition, "le") == 0)
+      cond_code = 0xd;
+    else if (strcmp(condition, "al") == 0)
+      cond_code = 0xe;
+    instr = set_value(instr, cond_code, 0, 4);
+    instr = set_value(instr, 0x0, 4, 1);
+    instr = set_value(instr, offset / 4, 5, 19);
+    instr = set_value(instr, 0x54, 24, 8);
+  }
 
-    return instr;
+  return instr;
 }
 
 ulong encode_directives(symbol_table_t st, char *opcode, char *operands)
 {
   int base = 0;
-  if (strncmp(operands, "0x", 2) == 0) {
+  if (strncmp(operands, "0x", 2) == 0)
+  {
     base = 16;
   }
   ulong simm_value = strtoul(operands, &operands, base);
