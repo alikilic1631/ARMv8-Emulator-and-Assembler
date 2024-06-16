@@ -10,12 +10,6 @@ char *logic[] = {"and", "bic", "orr", "orn", "eor", "eon", "ands", "bics", NULL}
 char *movs[] = {"movn", "movz", "movk", NULL};
 char *muls[] = {"madd", "msub", NULL};
 
-bool is_integer(const char *str, long *num) {
-    char *endptr;
-    *num = strtol(str, &endptr, 0); // Automatically handles both decimal and hex
-    return *endptr == '\0'; // Checks if the entire string was converted
-}
-
 char* get_condition_code(const char* str) {
     if (strlen(str) <= 2) {
         return ""; // Return an empty string if the input is too short
@@ -44,8 +38,6 @@ static ulong set_value(ulong base, ulong value, uint offset, uint size)
 
 ulong encode_dp(symbol_table_t st, char *opcode, char *operands)
 {
-  printf("opcode: %s\n", opcode);
-  printf("operands: %s\n", operands);
   ulong instr = 0;
   bool r1_sf, r1_sp_used;
   ulong r1;
@@ -429,9 +421,6 @@ ulong encode_branch(symbol_table_t st, char *opcode, char *operands, long addres
         char *condition = get_condition_code(opcode);
         ulong literal;
         operands = finish_parse_operand(parse_literal(operands, &literal, st));
-        printf("literal: %lu\n", literal);
-        printf("condition: %s\n", condition);
-        printf("operands: %s\n", operands);
         long offset = literal - address;
         int cond_code;
         if (strcmp(condition, "eq") == 0) cond_code = 0x0;

@@ -48,23 +48,6 @@ static char *append(const char *str, const char *suffix)
 
 static char *split_and_add(const char *str, const char *middle)
 {
-  // char *result = malloc(strlen(str) + strlen(middle) + 1);
-  // strcpy(result, str);
-  // char *comma = strchr(result, ',');
-  // if (comma == NULL)
-  // {
-  //   fprintf(stderr, "Expected comma in string: %s\n", str);
-  //   exit(EXIT_FAILURE);
-  // }
-  // comma++;
-  // while (*comma == ' ')
-  // {
-  //   comma++;
-  // }
-  // strcpy(comma, middle);
-
-  // return result;
-
   char *result = malloc(strlen(str) + strlen(middle) + 1);
   char *final = malloc(strlen(str) + strlen(middle) + 1);
   strcpy(result, str);
@@ -106,7 +89,6 @@ void first_pass(FILE *source_file, symbol_table_t st)
 
   while (fgets(line_buf, sizeof(line_buf), source_file))
   {
-    printf("first pass address: %ld\n", address);
     parse_labels(st, &address, line_buf);
   }
 
@@ -252,7 +234,6 @@ void second_pass(FILE *source_file, FILE *output_file, symbol_table_t st)
 
   while (fgets(line_buf, sizeof(line_buf), source_file))
   {
-    printf("Parsing instruction: %s\n", line_buf);
     if (strcmp(line_buf, "and x0, x0, x0") == 0) // halt instruction
     {
       break;
@@ -260,7 +241,5 @@ void second_pass(FILE *source_file, FILE *output_file, symbol_table_t st)
     if (line_buf[0] == '\0') // empty line
       continue;
     parse_instruction(output_file, st, line_buf, &address);
-    printf("address: %ld\n", address);
-    // address += INSTR_SIZE;
   }
 }
