@@ -33,7 +33,7 @@
 #define LE 0xD
 #define AL 0xE
 
-bool exec_cond_instr(emulstate *state, ulong raw) {
+bool exec_cond_instr(emulstate state, ulong raw) {
     bool sf = get_value(raw, 31, 1);
     byte condition = get_value(raw, 12, 4);
     byte rd_addr = get_value(raw, 0, 5);
