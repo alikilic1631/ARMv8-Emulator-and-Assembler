@@ -5,6 +5,7 @@
 #include "instr_dpreg.h"
 #include "instr_sdt.h"
 #include "instr_branch.h"
+#include "instr_cond.h"
 
 #define NELEMENTS(arr) (sizeof(arr) / sizeof(*arr))
 #define MEMORY_BLOCKS 4
@@ -129,6 +130,11 @@ bool emulstep(emulstate state)
     if (!exec_branch_instr(state, instr))
       unknown_instr(state, instr);
     // Branch instructions update PC directly
+    break;
+  case 0x7:
+    if (!exec_cond_instr(state, instr)) // Conditional instructions
+      unknown_instr(state, instr);
+    state->pc += INSTR_SIZE;
     break;
   default:
     unknown_instr(state, instr);
