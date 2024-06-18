@@ -32,7 +32,7 @@ stages:
     - ./run -p$TEST_FLAGS --toolchain ./arm-gnu-toolchain-13.2.Rel1-x86_64-aarch64-none-elf/bin/
     - grep -q -e FAILED -e INCORRECT test/actual_results/results.json && exit 1
     - cd ..
-    - find -path "$VALGRIND_TESTS" -exec valgrind --leak-check=full --show-error-list=yes --error-exitcode=1 $BIN {} /dev/null \;
+    - find -path "$VALGRIND_TESTS" | xargs -I {} valgrind --leak-check=full --show-error-list=yes --error-exitcode=1 $BIN {} /dev/null
 
 emulate_testsuite:
   extends: .armv8_testsuite

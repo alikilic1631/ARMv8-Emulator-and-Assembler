@@ -8,7 +8,7 @@
 
 symbol_table_t symbol_table_init()
 {
-  symbol_table_t st = malloc(sizeof(symbol_table_t));
+  symbol_table_t st = malloc(sizeof(struct symbol_table_t));
   st->elements = malloc(INIT_CAP * sizeof(symbol_t));
   st->cap = INIT_CAP;
   st->len = 0;
