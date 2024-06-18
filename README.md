@@ -10,6 +10,13 @@
 - Source C (and C header) files for `emulate` and `assemble`.
 - `Makefile` for building.
 
+#### `src/led_blink.s`
+- Code for part 3 (blinking an LED on a Raspberry Pi).
+- Uses GPIO pin 2.
+- Memory addresses for GPIO pins are _not_ loaded immediately since:
+  1. They don't fit into some `imm` fields.
+  2. Labels make it clearer.
+
 ### `doc/`
 - Source latex files for checkpoint and final reports.
 - `Makefile` for building.
