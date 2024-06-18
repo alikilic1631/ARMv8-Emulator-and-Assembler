@@ -17,6 +17,7 @@ char *dp_aliases[] = {"cmp", "cmn", "neg", "negs", "tst", "mvn", "mov", "mul", "
 char *branching[] = {"b", "br", "b.eq", "b.ne", "b.ge", "b.lt", "b.gt", "b.le", "b.al", NULL};
 char *sdts[] = {"str", "ldr", NULL};
 char *directives[] = {".int", NULL};
+char *conditional[] = {"csel", "cset", "csetm", "csinc", "csinv", NULL};
 
 static bool instruction_type(const char *instr, char **array)
 {
@@ -204,6 +205,10 @@ static void parse_instruction(FILE *output_file, symbol_table_t st, char *line, 
   else if (instruction_type(opcode, data_processing))
   {
     binary_instruction = encode_dp(st, opcode, operands);
+  }
+  else if (instruction_type(opcode, conditional))
+  {
+    binary_instruction = encode_conditionals(st, opcode, operands);
   }
   else if (instruction_type(opcode, sdts))
   {
