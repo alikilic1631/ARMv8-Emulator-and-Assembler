@@ -13,4 +13,4 @@ tests/res/outfiles
 non_student/default_solution
 .pytest_cache
 .mypy_cache
-
+!*_exp.out
