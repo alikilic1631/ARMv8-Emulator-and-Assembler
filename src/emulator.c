@@ -116,7 +116,7 @@ bool emulstep(emulstate state)
     if (((instr >> 25) & 0xff) == 0xd4) {
       exec_cond_instr(state, instr);
     }
-    if (!exec_dpreg_instr(state, instr))
+    else if (!exec_dpreg_instr(state, instr))
       unknown_instr(state, instr);
     state->pc += INSTR_SIZE;
     break;
