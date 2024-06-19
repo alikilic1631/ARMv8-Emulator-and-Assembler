@@ -17,6 +17,7 @@
 *.o
 emulate
 assemble
+*.img
 
 #ignore junk files from compiling Haskell code
 *.hi

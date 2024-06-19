@@ -39,8 +39,17 @@ int main(int argc, char **argv)
   fread(state->memory, 1, MAX_MEMORY, fin); // we expect less than MAX_MEMORY to be writen, ignore return value
   fclose(fin);
 
+  char buf[100];
+  bool debug = getenv("ARMV8_DEBUG") != NULL;
+
   while (emulstep(state))
   { // keep running while no halt
+    // Useful for debugging Part 3
+    if (debug)
+    {
+      fprint_emulstate(fout, state);
+      fgets(buf, 100, stdin);
+    }
   }
 
   // Finaly, print state
