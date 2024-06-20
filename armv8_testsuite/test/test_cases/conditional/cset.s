@@ -1,5 +1,5 @@
 
-movz x0, #0
+movz x0, #1
 movz x1, #1
 
 cmp x0, x1

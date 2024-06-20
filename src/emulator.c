@@ -113,7 +113,7 @@ bool emulstep(emulstate state)
     break;
   case 0x5:
   case 0xd: // Data Proccessing Register
-    if (((instr >> 25) & 0xff) == 0xd4) {
+    if (((instr >> 21) & 0xff) == 0xd4) {
       exec_cond_instr(state, instr);
     }
     else if (!exec_dpreg_instr(state, instr))

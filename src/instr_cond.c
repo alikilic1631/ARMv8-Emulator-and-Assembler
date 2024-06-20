@@ -101,10 +101,10 @@ bool exec_cond_instr(emulstate state, ulong raw) {
             return false;
         }
         if (execute) {
-        set_reg(state, sf, rd_addr, ~((ullong) 0x0));
+            set_reg(state, sf, rd_addr, ~((ullong) 0x0));
         }
         else{ 
-        set_reg(state, sf, rd_addr, 0x0);
+            set_reg(state, sf, rd_addr, 0x0);
         }
     }
     else if (csinc) {

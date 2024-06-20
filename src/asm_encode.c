@@ -506,7 +506,7 @@ ulong encode_conditionals(symbol_table_t st, char *opcode, char *operands)
   }
   else if (strcmp(opcode, "cset") == 0)
   {
-    instr = set_value(instr, 0xD4, 5, 6);
+    instr = set_value(instr, 0x3F, 5, 6);
     instr = set_value(instr, 0x1F, 16, 5);
   }
   else if (strcmp(opcode, "csetm") == 0)
@@ -532,22 +532,22 @@ ulong encode_conditionals(symbol_table_t st, char *opcode, char *operands)
     instr = set_value(instr, 0x1, 30, 1);
   }
 
-  char *condition = operands;
-  int cond_code = 0;
-    if (strcmp(condition, "eq") == 0)
-      cond_code = 0x0;
-    else if (strcmp(condition, "ne") == 0)
-      cond_code = 0x1;
-    else if (strcmp(condition, "ge") == 0)
-      cond_code = 0xa;
-    else if (strcmp(condition, "lt") == 0)
-      cond_code = 0xb;
-    else if (strcmp(condition, "gt") == 0)
-      cond_code = 0xc;
-    else if (strcmp(condition, "le") == 0)
-      cond_code = 0xd;
-    else if (strcmp(condition, "al") == 0)
-      cond_code = 0xe;
+  unsigned int cond_code = 0;
+    if (strncmp(operands, "eq", 2) == 0)
+      {cond_code = 0x0;}
+    else if (strncmp(operands, "ne", 2) == 0)
+      {cond_code = 0x1;}
+    else if (strncmp(operands, "ge", 2) == 0)
+      {cond_code = 0xa;}
+    else if (strncmp(operands, "lt", 2) == 0)
+      {cond_code = 0xb;}
+    else if (strncmp(operands, "gt", 2) == 0)
+      {cond_code = 0xc;}
+    else if (strncmp(operands, "le", 2) == 0)
+      {cond_code = 0xd;}
+    else if (strncmp(operands, "al", 2) == 0)
+      {cond_code = 0xe;}
+
     instr = set_value(instr, cond_code, 12, 4);
 
   return instr;
