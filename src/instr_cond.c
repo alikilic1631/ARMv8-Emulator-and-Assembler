@@ -87,10 +87,10 @@ bool exec_cond_instr(emulstate state, ulong raw) {
         ullong rm_value = get_reg(state, sf, rm_addr);
 
         if (execute) {
-        set_reg(state, sf, rd_addr, rn_value);
+            set_reg(state, sf, rd_addr, rn_value);
         }
         else{ 
-        set_reg(state, sf, rd_addr, rm_value);
+            set_reg(state, sf, rd_addr, rm_value);
         }
     }
     else if (cset) {
@@ -98,10 +98,10 @@ bool exec_cond_instr(emulstate state, ulong raw) {
             return false;
         }
         if (execute) {
-        set_reg(state, sf, rd_addr, 0x1);
+            set_reg(state, sf, rd_addr, 0x1);
         }
         else{ 
-        set_reg(state, sf, rd_addr, 0x0);
+            set_reg(state, sf, rd_addr, 0x0);
         }
     }
     else if (csetm) {
@@ -122,10 +122,10 @@ bool exec_cond_instr(emulstate state, ulong raw) {
         ullong rm_value = get_reg(state, sf, rm_addr);
 
         if (execute) {
-        set_reg(state, sf, rd_addr, rn_value);
+            set_reg(state, sf, rd_addr, rn_value);
         }
         else{ 
-        set_reg(state, sf, rd_addr, (rm_value + 1));
+            set_reg(state, sf, rd_addr, (rm_value + 1));
         }
     }
     else if (csinv) {
@@ -135,10 +135,10 @@ bool exec_cond_instr(emulstate state, ulong raw) {
         ullong rm_value = get_reg(state, sf, rm_addr);
 
         if (execute) {
-        set_reg(state, sf, rd_addr, rn_value);
+            set_reg(state, sf, rd_addr, rn_value);
         }
         else{ 
-        set_reg(state, sf, rd_addr, ~rm_value);
+            set_reg(state, sf, rd_addr, ~rm_value);
         }
     }
     else if (csneg) {
@@ -148,7 +148,7 @@ bool exec_cond_instr(emulstate state, ulong raw) {
         ullong rm_value = get_reg(state, sf, rm_addr);
 
         if (execute) {
-        set_reg(state, sf, rd_addr, rn_value);
+            set_reg(state, sf, rd_addr, rn_value);
         }
         else{
             ullong new_rm_value = rm_value;
@@ -158,7 +158,7 @@ bool exec_cond_instr(emulstate state, ulong raw) {
             else {
                 new_rm_value ^= MSB_32_BIT;
             }
-        set_reg(state, sf, rd_addr, new_rm_value);
+            set_reg(state, sf, rd_addr, new_rm_value);
         }
     }
     else {
