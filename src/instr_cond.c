@@ -23,6 +23,10 @@
 #define CSINV_TEST 0x7FE00C00
 // 0b01011010100000000000000000000000
 #define CSINV_EXPECTED 0x5A800000
+// 0b01111111111000000000110000000000
+#define CSNEG_TEST 0x7FE00C00
+// 0b01011010100000000000010000000000
+#define CSNEG_EXPECTED 0x5A800400
 
 // Initializing conditions
 #define EQ 0x0
@@ -71,6 +75,7 @@ bool exec_cond_instr(emulstate state, ulong raw) {
     bool csetm = (raw & CSETM_TEST) == CSETM_EXPECTED;
     bool csinc = (raw & CSINC_TEST) == CSINC_EXPECTED;
     bool csinv = (raw & CSINV_TEST) == CSINV_EXPECTED;
+    bool csneg = (raw & CSNEG_TEST) == CSNEG_EXPECTED;
 
     if (csel) {
         byte rn_addr = get_value(raw, 5, 5);
@@ -131,6 +136,26 @@ bool exec_cond_instr(emulstate state, ulong raw) {
         }
         else{ 
         set_reg(state, sf, rd_addr, ~rm_value);
+        }
+    }
+    else if (csneg) {
+        byte rn_addr = get_value(raw, 5, 5);
+        byte rm_addr = get_value(raw, 16, 5);
+        ullong rn_value = get_reg(state, sf, rn_addr);
+        ullong rm_value = get_reg(state, sf, rm_addr);
+
+        if (execute) {
+        set_reg(state, sf, rd_addr, rn_value);
+        }
+        else{
+            ullong new_rm_value = rm_value;
+            if (sf) {
+                new_rm_value ^= 0x8000000000000000;
+            }
+            else {
+                new_rm_value ^= 0x80000000;
+            }
+        set_reg(state, sf, rd_addr, new_rm_value);
         }
     }
     else {

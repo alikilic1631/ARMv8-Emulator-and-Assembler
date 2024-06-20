@@ -531,6 +531,15 @@ ulong encode_conditionals(symbol_table_t st, char *opcode, char *operands)
     instr = set_value(instr, rm, 16, 5);
     instr = set_value(instr, 0x1, 30, 1);
   }
+  else if (strcmp(opcode, "csneg") == 0)
+  {
+    operands = finish_parse_operand(parse_register(operands, &rn, &rn_sf, &rn_sp_used));
+    operands = finish_parse_operand(parse_register(operands, &rm, &rm_sf, &rm_sp_used));
+    instr = set_value(instr, rn, 5, 5);
+    instr = set_value(instr, rm, 16, 5);
+    instr = set_value(instr, 0x1, 30, 1);
+    instr = set_value(instr, 0x1, 10, 1);
+  }
 
   unsigned int cond_code = 0;
     if (strncmp(operands, "eq", 2) == 0)

@@ -17,7 +17,7 @@ char *dp_aliases[] = {"cmp", "cmn", "neg", "negs", "tst", "mvn", "mov", "mul", "
 char *branching[] = {"b", "br", "b.eq", "b.ne", "b.ge", "b.lt", "b.gt", "b.le", "b.al", NULL};
 char *sdts[] = {"str", "ldr", NULL};
 char *directives[] = {".int", NULL};
-char *conditional[] = {"csel", "cset", "csetm", "csinc", "csinv", NULL};
+char *conditional[] = {"csel", "cset", "csetm", "csinc", "csinv", "csneg", NULL};
 
 static bool instruction_type(const char *instr, char **array)
 {
