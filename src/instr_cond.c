@@ -37,6 +37,9 @@
 #define LE 0xD
 #define AL 0xE
 
+#define MSB_64_BIT 0x8000000000000000;
+#define MSB_32_BIT 0x80000000;
+
 bool exec_cond_instr(emulstate state, ulong raw) {
     bool sf = get_value(raw, 31, 1);
     byte condition = get_value(raw, 12, 4);
@@ -150,10 +153,10 @@ bool exec_cond_instr(emulstate state, ulong raw) {
         else{
             ullong new_rm_value = rm_value;
             if (sf) {
-                new_rm_value ^= 0x8000000000000000;
+                new_rm_value ^= MSB_64_BIT;
             }
             else {
-                new_rm_value ^= 0x80000000;
+                new_rm_value ^= MSB_32_BIT;
             }
         set_reg(state, sf, rd_addr, new_rm_value);
         }
