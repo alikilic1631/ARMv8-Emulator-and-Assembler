@@ -485,3 +485,70 @@ ulong encode_directives(symbol_table_t st, char *opcode, char *operands)
 
   return simm_value;
 }
+
+ulong encode_conditionals(symbol_table_t st, char *opcode, char *operands)
+{
+  ulong instr = 0;
+  bool rd_sf, rd_sp_used, rn_sf, rn_sp_used, rm_sf, rm_sp_used;
+  ulong rd, rn, rm;
+  operands = finish_parse_operand(parse_register(operands, &rd, &rd_sf, &rd_sp_used));
+  
+  instr = set_value(instr, rd, 0, 5);
+  instr = set_value(instr, 0xD4, 21, 8);
+  instr = set_value(instr, rd_sf, 31, 1);
+
+  if (strcmp(opcode, "csel") == 0)
+  {
+    operands = finish_parse_operand(parse_register(operands, &rn, &rn_sf, &rn_sp_used));
+    operands = finish_parse_operand(parse_register(operands, &rm, &rm_sf, &rm_sp_used));
+    instr = set_value(instr, rn, 5, 5);
+    instr = set_value(instr, rm, 16, 5);
+  }
+  else if (strcmp(opcode, "cset") == 0)
+  {
+    instr = set_value(instr, 0x3F, 5, 6);
+    instr = set_value(instr, 0x1F, 16, 5);
+  }
+  else if (strcmp(opcode, "csetm") == 0)
+  {
+    instr = set_value(instr, 0x1F, 5, 5);
+    instr = set_value(instr, 0x1F, 16, 5);
+    instr = set_value(instr, 0x1, 30, 1);
+  }
+  else if (strcmp(opcode, "csinc") == 0)
+  {
+    operands = finish_parse_operand(parse_register(operands, &rn, &rn_sf, &rn_sp_used));
+    operands = finish_parse_operand(parse_register(operands, &rm, &rm_sf, &rm_sp_used));
+    instr = set_value(instr, rn, 5, 5);
+    instr = set_value(instr, rm, 16, 5);
+    instr = set_value(instr, 0x1, 10, 1);
+  }
+  else if (strcmp(opcode, "csinv") == 0)
+  {
+    operands = finish_parse_operand(parse_register(operands, &rn, &rn_sf, &rn_sp_used));
+    operands = finish_parse_operand(parse_register(operands, &rm, &rm_sf, &rm_sp_used));
+    instr = set_value(instr, rn, 5, 5);
+    instr = set_value(instr, rm, 16, 5);
+    instr = set_value(instr, 0x1, 30, 1);
+  }
+
+  unsigned int cond_code = 0;
+    if (strncmp(operands, "eq", 2) == 0)
+      {cond_code = 0x0;}
+    else if (strncmp(operands, "ne", 2) == 0)
+      {cond_code = 0x1;}
+    else if (strncmp(operands, "ge", 2) == 0)
+      {cond_code = 0xa;}
+    else if (strncmp(operands, "lt", 2) == 0)
+      {cond_code = 0xb;}
+    else if (strncmp(operands, "gt", 2) == 0)
+      {cond_code = 0xc;}
+    else if (strncmp(operands, "le", 2) == 0)
+      {cond_code = 0xd;}
+    else if (strncmp(operands, "al", 2) == 0)
+      {cond_code = 0xe;}
+
+    instr = set_value(instr, cond_code, 12, 4);
+
+  return instr;
+}

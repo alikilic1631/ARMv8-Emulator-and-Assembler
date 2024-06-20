@@ -5,6 +5,7 @@
 #include "instr_dpreg.h"
 #include "instr_sdt.h"
 #include "instr_branch.h"
+#include "instr_cond.h"
 
 #define NELEMENTS(arr) (sizeof(arr) / sizeof(*arr))
 #define MEMORY_BLOCKS 4
@@ -112,7 +113,10 @@ bool emulstep(emulstate state)
     break;
   case 0x5:
   case 0xd: // Data Proccessing Register
-    if (!exec_dpreg_instr(state, instr))
+    if (((instr >> 21) & 0xff) == 0xd4) {
+      exec_cond_instr(state, instr);
+    }
+    else if (!exec_dpreg_instr(state, instr))
       unknown_instr(state, instr);
     state->pc += INSTR_SIZE;
     break;
