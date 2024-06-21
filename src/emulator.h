@@ -39,6 +39,9 @@ extern void fprint_emulstate(FILE *stream, emulstate state);
 // Returns true if program should continue (no halt)
 extern bool emulstep(emulstate state);
 
+#define F64 1
+#define F32 0
+
 // Utility function to get a range from a ulong. Useful for unpacking an instruction.
 extern ulong get_value(ulong from, uint offset, uint size);
 // Utility function to set a register value, and correct for 32/64 bit mode.

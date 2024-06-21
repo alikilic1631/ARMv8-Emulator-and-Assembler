@@ -187,18 +187,22 @@ ullong get_reg(emulstate state, bool sf, byte rg)
 
 void set_simd_reg(emulstate state, byte rg, byte ftype, double value)
 {
+  if (rg > SIMD_REGS)
+  {
+    fprintf(stderr, "Error: Out of bounds SIMD register number %d\n", rg);
+    exit(1);
+  }
   ullong *ptr = (ullong *)(&value);
   switch (ftype)
   {
-  case 0:
+  case F32:
   {
     float *fptr = (float *)ptr;
     *fptr = (float)value;
-    *ptr &= 0xffffffff;
+    *ptr &= SF_MASK;
     break;
   }
-  case 1:
-    *ptr &= 0xffffffffffffffff;
+  case F64:
     break;
   default:
     fprintf(stderr, "Error: Unsupported SIMD ftype %d\n", ftype);
@@ -209,16 +213,20 @@ void set_simd_reg(emulstate state, byte rg, byte ftype, double value)
 
 double get_simd_reg(emulstate state, byte rg, byte ftype)
 {
+  if (rg > SIMD_REGS)
+  {
+    fprintf(stderr, "Error: Out of bounds SIMD register number %d\n", rg);
+    exit(1);
+  }
   double value = state->simd_regs[(int)rg];
   ullong *ptr = (ullong *)(&value);
   switch (ftype)
   {
-  case 0:
-    *ptr &= 0xffffffff;
+  case F32:
+    *ptr &= SF_MASK;
     float *val = (float *)ptr;
     return *val;
-  case 1:
-    *ptr &= 0xffffffffffffffff;
+  case F64:
     return value;
   default:
     fprintf(stderr, "Error: Unsupported SIMD ftype %d\n", ftype);

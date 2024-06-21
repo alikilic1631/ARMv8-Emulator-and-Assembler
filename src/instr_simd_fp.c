@@ -10,6 +10,24 @@
 #define CMP_TEST 0x17
 #define CMP_EXPECTED 0
 
+#define FMUL 0x2
+#define FDIV 0x6
+#define FADD 0xa
+#define FSUB 0xe
+#define FMAX 0x12
+#define FMIN 0x16
+#define FNMUL 0x22
+#define FCMP 0x8
+#define FABS 0x3
+#define FNEG 0x5
+#define FMOV1 0x0
+#define FMOV2 0x4
+#define FCVTZS 0x18
+#define SCVTF 0x2
+#define FMOV_REG 0x1
+#define INT_TO_FP 0x7
+#define FP_TO_INT 0x6
+
 bool exec_simd_fp_instr(emulstate state, ulong raw)
 {
   if ((raw & FDP_TEST) == FDP_EXPECTED)
@@ -30,27 +48,27 @@ bool exec_simd_fp_instr(emulstate state, ulong raw)
       double m = get_simd_reg(state, rm, ftype);
       switch (arith)
       {
-      case 2:
+      case FMUL:
       { // fmul
         set_simd_reg(state, rd, ftype, n * m);
         return true;
       }
-      case 6:
+      case FDIV:
       { // fdiv
         set_simd_reg(state, rd, ftype, n / m);
         return true;
       }
-      case 10:
+      case FADD:
       { // fadd
         set_simd_reg(state, rd, ftype, n + m);
         return true;
       }
-      case 14:
+      case FSUB:
       { // fsub
         set_simd_reg(state, rd, ftype, n - m);
         return true;
       }
-      case 18:
+      case FMAX:
       { // fmax
         if (n > m)
         {
@@ -62,7 +80,7 @@ bool exec_simd_fp_instr(emulstate state, ulong raw)
         }
         return true;
       }
-      case 22:
+      case FMIN:
       { // fmin
         if (n < m)
         {
@@ -74,12 +92,12 @@ bool exec_simd_fp_instr(emulstate state, ulong raw)
         }
         return true;
       }
-      case 34:
-      { // fnmull
+      case FNMUL:
+      { // fnmul
         set_simd_reg(state, rd, ftype, -(n * m));
         return true;
       }
-      case 8:
+      case FCMP:
       {
         if ((rd & CMP_TEST) == CMP_EXPECTED)
         { // fcmp
@@ -128,7 +146,7 @@ bool exec_simd_fp_instr(emulstate state, ulong raw)
     }
     switch (opc)
     {
-    case 3:
+    case FABS:
     { // fabs
       double val = get_simd_reg(state, rn, ftype);
       if (val < 0)
@@ -136,28 +154,28 @@ bool exec_simd_fp_instr(emulstate state, ulong raw)
       set_simd_reg(state, rd, ftype, val);
       return true;
     }
-    case 5:
+    case FNEG:
     { // fneg
       double val = get_simd_reg(state, rn, ftype);
       set_simd_reg(state, rd, ftype, -val);
       return true;
     }
-    case 0:
-    case 4:
+    case FMOV1:
+    case FMOV2:
     {
       byte opcode = get_value(raw, 16, 3);
       bool sf = get_value(raw, 31, 1);
 
-      if (opcode == 7)
+      if (opcode == INT_TO_FP)
       { // int -> fp
         double val;
         ullong *ptr = (ullong *)(&val);
         *ptr = get_reg(state, sf, rn);
-        set_simd_reg(state, rd, 1, val);
+        set_simd_reg(state, rd, F64, val);
       }
-      else if (opcode == 6)
+      else if (opcode == FP_TO_INT)
       { // fp -> int
-        double val = get_simd_reg(state, rn, 1);
+        double val = get_simd_reg(state, rn, F64);
         ullong *ptr = (ullong *)(&val);
         set_reg(state, sf, rd, *ptr);
       }
@@ -167,12 +185,12 @@ bool exec_simd_fp_instr(emulstate state, ulong raw)
         double n = get_simd_reg(state, rn, ftype);
         switch (rm)
         {
-        case 24:
+        case FCVTZS:
         { // fcvtzs
           set_reg(state, sf, rd, (long long)n);
           return true;
         }
-        case 2:
+        case SCVTF:
         { // scvtf
           ullong val = get_reg(state, sf, rn);
           set_simd_reg(state, rd, ftype, val);
@@ -184,7 +202,7 @@ bool exec_simd_fp_instr(emulstate state, ulong raw)
       }
       return true;
     }
-    case 1:
+    case FMOV_REG:
     { // fp -> fp
       double val = get_simd_reg(state, rn, ftype);
       set_simd_reg(state, rd, ftype, val);
