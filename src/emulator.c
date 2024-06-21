@@ -188,7 +188,6 @@ ullong get_reg(emulstate state, bool sf, byte rg)
 void set_simd_reg(emulstate state, byte rg, byte ftype, double value)
 {
   ullong *ptr = (ullong *)(&value);
-  fprintf(stderr, "VAL: %f (%llx)\n", value, *ptr);
   switch (ftype)
   {
   case 0:

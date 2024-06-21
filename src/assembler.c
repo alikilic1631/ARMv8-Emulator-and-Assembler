@@ -18,7 +18,8 @@ char *branching[] = {"b", "br", "b.eq", "b.ne", "b.ge", "b.lt", "b.gt", "b.le", 
 char *sdts[] = {"str", "ldr", NULL};
 char *directives[] = {".int", NULL};
 char *conditional[] = {"csel", "cset", "csetm", "csinc", "csinv", "csneg", NULL};
-char *simd_fps[] = {"fmov", "fabs", "fneg", NULL};
+char *simd_fps[] = {"fmov", "fabs", "fneg", "fmin", "fmax", "fmul", "fdiv", "fadd", "fsub", "fnmul",
+                    "fcmp", "fcvtzs", "scvtf", NULL};
 
 static bool instruction_type(const char *instr, char **array)
 {
