@@ -8,9 +8,10 @@
 
 ### `src/`
 - Source C (and C header) files for `emulate` and `assemble`.
+- Extension is merged into parts 1 and 2, since all tests pass.
 - `Makefile` for building.
 
-#### `src/led_blink.s`
+#### `programs/led_blink.s`
 - Code for part 3 (blinking an LED on a Raspberry Pi).
 - Uses GPIO pin 2.
 - Memory addresses for GPIO pins are _not_ loaded immediately since:
