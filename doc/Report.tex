@@ -103,7 +103,7 @@ For our extension, we decided to add multiple new features to the emulator and a
 \begin{itemize}
     \item Allowing single-line and multi-line comments in assembly files (.s extension)
     \item Conditional instructions according to the ARMv8 specification (cset, csel, csetm, csinc, csinv, csneg)
-    \item Floating point conversions, comparisons and arithmetic according to the ARMv8 specification (fmov, fcvtzs, fjcvtzs, scvtf, fcmp, fabs, fneg, fmul, fdiv, fadd, fsub, fmax, fmin, fnmul)
+    \item Floating point conversions, comparisons and arithmetic according to the ARMv8 specification (fmov, fcvtzs, scvtf, fcmp, fabs, fneg, fmul, fdiv, fadd, fsub, fmax, fmin, fnmul)
 \end{itemize}
 
 \verb|Allowing Comments:| We could have implemented the commenting feature in two ways: increasing the character pointer to skip the characters when we came across ‘//’ or ‘/*’ until ‘*/’ or removing all comments from the assembly file before passing it to the assembler to process it. We did the second way because the first way would add unnecessary complications. So, in our implementation, when an assembly file is given to the assembler, it first stores the original contents of the file. Then, it removes all comments and does first-pass and second-pass. In the end, we restore the file with its original contents.
