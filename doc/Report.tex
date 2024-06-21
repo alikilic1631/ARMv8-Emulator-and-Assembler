@@ -168,7 +168,7 @@ One of the main tasks of the project was maintaining full compatibility between 
 
 \section{Testing}
 \begin{enumerate}
-    \item \verb|Automated Testing Workflow:| We  set up a GitLab action that automatically runs the test suite on the recently committed repository. Then, the results of the tests could be viewed on GitLab pipelines. Afterward, we can enter the pipeline logs to see which tests fail and access the artifacts to view our debugging print statements and error messages.
+    \item \verb|Automated Testing Workflow:| We  set up a GitLab action that automatically runs the test suite on the recently committed repository, as well as Valgrind. Then, the results of the tests could be viewed on GitLab pipelines. Afterward, we can enter the pipeline logs to see which tests fail and access the artifacts to view our debugging print statements and error messages.
     
     \item \verb|Local Testing:|  We also tested locally on our machines using ‘make’ on the src folder and ‘make clean \&\& ./run -p’ on the armv8-testsuite folder so that we don’t send too many pipeline requests to GitLab.
     
@@ -176,7 +176,7 @@ One of the main tasks of the project was maintaining full compatibility between 
 \end{enumerate}
 
 \subsection{Evaluating the Effectiveness}
-Our testing was thorough and effective as 100 percent of our tests passed in the emulator and assembler test suite, including our tests that tested additional features we implemented.
+Our testing was thorough and effective as 100 percent of our tests passed in the emulator and assembler test suite, including our tests that tested additional features we implemented. Valgrind also reports 0 errors, meaning our code is very likely memory-safe.
 
 
 \section{Group Reflections}
