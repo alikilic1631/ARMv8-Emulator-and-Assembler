@@ -10,7 +10,7 @@ CFLAGS  ?= -std=c17 -g\
 all: assemble emulate led_blink
 
 assemble: assemble.o assembler.o symbol_table.o parse_utils.o asm_encode.o
-emulate: emulate.o emulator.o instr_dpimm.o instr_dpreg.o instr_sdt.o instr_branch.o instr_cond.o
+emulate: emulate.o emulator.o instr_dpimm.o instr_dpreg.o instr_sdt.o instr_branch.o instr_cond.o instr_simd_fp.o
 
 led_blink: assemble
 	./assemble led_blink.s kernel8.img

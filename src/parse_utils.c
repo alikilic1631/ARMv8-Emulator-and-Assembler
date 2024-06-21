@@ -70,6 +70,41 @@ char *parse_register(char *str, ulong *reg, bool *sf, bool *sp_used)
   return str;
 }
 
+char *parse_reg_or_simd(char *str, ulong *reg, bool *sf, bool *sp_used, char *ftype)
+{
+  switch (str[0])
+  {
+  case 'x':
+  case 'w':
+    if (sf == NULL || sp_used == NULL)
+    {
+      fprintf(stderr, "Error: General register specifier not allowed here\n");
+      exit(1);
+    }
+    *ftype = -1;
+    return parse_register(str, reg, sf, sp_used);
+  case 'd':
+    *ftype = 1;
+    break;
+  case 's':
+    *ftype = 0;
+    break;
+  default: // quod,half-precision and vectors are unsupported
+    fprintf(stderr, "Error: Invalid SIMD register specifier %c\n", str[0]);
+    exit(1);
+  }
+  str++;
+
+  // Parse register number
+  *reg = strtoul(str, &str, 10);
+  if (*reg > MAX_REG)
+  {
+    fprintf(stderr, "Error: Register number out of bounds %lu\n", *reg);
+    exit(1);
+  }
+  return str;
+}
+
 char *parse_imm(char *str, ulong *imm)
 {
   *imm = strtoul(str, &str, 0);
@@ -79,6 +114,12 @@ char *parse_imm(char *str, ulong *imm)
 char *parse_simm(char *str, long *simm)
 {
   *simm = strtol(str, &str, 0);
+  return str;
+}
+
+char *parse_fimm(char *str, double *fimm)
+{
+  *fimm = strtod(str, &str);
   return str;
 }
 

@@ -561,3 +561,110 @@ ulong encode_conditionals(symbol_table_t st, char *opcode, char *operands)
 
   return instr;
 }
+
+ulong encode_simd_fp(symbol_table_t st, char *opcode, char *operands)
+{
+  ulong instr = 0;
+  if (strcmp(opcode, "fmov") == 0)
+  {
+    // 0bX0011110XX1 << 21 for fmov
+    instr = set_value(instr, 0xf1, 21, 8);
+    bool rd_sf, rd_sp_used, rn_sf, rn_sp_used;
+    char rd_ftype, rn_ftype;
+    ulong rd, rn;
+    operands = finish_parse_operand(parse_reg_or_simd(operands, &rd, &rd_sf, &rd_sp_used, &rd_ftype));
+    operands = finish_parse_operand(parse_reg_or_simd(operands, &rn, &rn_sf, &rn_sp_used, &rn_ftype));
+    instr = set_value(instr, rd, 0, 5);
+    if (rd_ftype >= 0)
+    {
+      instr = set_value(instr, rd_ftype, 22, 2);
+      instr = set_value(instr, rn, 5, 5);
+      if (rn_ftype >= 0)
+      { // fp -> fp
+        if (rd_ftype != rn_ftype)
+        {
+          fprintf(stderr, "Error: SIMD register sizes must match in fmov\n");
+          exit(1);
+        }
+        instr = set_value(instr, 1, 14, 1);
+      }
+      else
+      { // int -> fp
+        if (rn_sp_used)
+        {
+          fprintf(stderr, "Error: SP cannot be used as register in fmov\n");
+          exit(1);
+        }
+        instr = set_value(instr, 7, 16, 3);
+        instr = set_value(instr, rn_sf, 31, 1);
+      }
+    }
+    else
+    { // fp -> int
+      if (rd_sp_used)
+      {
+        fprintf(stderr, "Error: SP cannot be used as register in fmov\n");
+        exit(1);
+      }
+      if (rn_ftype < 0)
+      {
+        fprintf(stderr, "Error: Unsupported SIMD register type for fmov %d\n", rn_ftype);
+        exit(1);
+      }
+      instr = set_value(instr, rn, 5, 5);
+      instr = set_value(instr, 6, 16, 3);
+      instr = set_value(instr, rn_ftype, 22, 2);
+      instr = set_value(instr, rd_sf, 31, 1);
+    }
+  }
+  else if (strcmp(opcode, "fabs") == 0)
+  {
+    // 0b00011110XX10000011 << 14 for fabs
+    instr = set_value(instr, 0x7883, 14, 18);
+    bool rd_sf, rd_sp_used, rn_sf, rn_sp_used;
+    char rd_ftype, rn_ftype;
+    ulong rd, rn;
+    operands = finish_parse_operand(parse_reg_or_simd(operands, &rd, &rd_sf, &rd_sp_used, &rd_ftype));
+    operands = finish_parse_operand(parse_reg_or_simd(operands, &rn, &rn_sf, &rn_sp_used, &rn_ftype));
+    if (rd_ftype < 0 || rn_ftype < 0)
+    {
+      fprintf(stderr, "Error: Invalid general register in fabs\n");
+      exit(1);
+    }
+    if (rd_ftype != rn_ftype) {
+      fprintf(stderr, "Error: SIMD register sizes must match in fabs\n");
+      exit(1);
+    }
+    instr = set_value(instr, rd, 0, 5);
+    instr = set_value(instr, rn, 5, 5);
+    instr = set_value(instr, rd_ftype, 22, 2);
+  }
+  else if (strcmp(opcode, "fneg") == 0)
+  {
+    // 0b00011110XX10000101 << 14 for fabs
+    instr = set_value(instr, 0x7885, 14, 18);
+    bool rd_sf, rd_sp_used, rn_sf, rn_sp_used;
+    char rd_ftype, rn_ftype;
+    ulong rd, rn;
+    operands = finish_parse_operand(parse_reg_or_simd(operands, &rd, &rd_sf, &rd_sp_used, &rd_ftype));
+    operands = finish_parse_operand(parse_reg_or_simd(operands, &rn, &rn_sf, &rn_sp_used, &rn_ftype));
+    if (rd_ftype < 0 || rn_ftype < 0)
+    {
+      fprintf(stderr, "Error: Invalid general register in fneg\n");
+      exit(1);
+    }
+    if (rd_ftype != rn_ftype) {
+      fprintf(stderr, "Error: SIMD register sizes must match in fneg\n");
+      exit(1);
+    }
+    instr = set_value(instr, rd, 0, 5);
+    instr = set_value(instr, rn, 5, 5);
+    instr = set_value(instr, rd_ftype, 22, 2);
+  }
+  if (operands[0] != '\0')
+  {
+    fprintf(stderr, "Error: Extra operands after instruction\n");
+    exit(EXIT_FAILURE);
+  }
+  return instr;
+}
