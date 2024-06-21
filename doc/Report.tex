@@ -113,6 +113,7 @@ For our extension, we decided to add multiple new features to the emulator and a
 \verb|Floating point support:| We extend the code to include some basic floating point instructions, assuming a quiet operation mode (since our emulator does not support exceptions).  These instructions require another set of registers (32 SIMD registers). We had to spend a lot of time getting the conversions exactly right since it is impossible to do bitwise operations directly on floating point numbers in C.
 
 \subsection{High-Level Description}
+Note that the extension is merged with Parts 1 and 2 in the \verb|src/| folder. None of the provided tests were modified to make this work, and they all still pass.
 \begin{itemize}
         \item \verb|assemble.c:| 
         \begin{itemize}
