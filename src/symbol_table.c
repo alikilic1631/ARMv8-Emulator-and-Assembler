@@ -1,8 +1,8 @@
+#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include "symbol_table.h"
-#include "assert.h"
 
 #define INIT_CAP 4
 
@@ -56,8 +56,7 @@ long symbol_table_find(symbol_table_t st, char *label, int label_len)
   {
     if (
         (label_len >= 0 && strncmp(label, st->elements[i].label, label_len) == 0) ||
-        (label_len < 0 && strcmp(label, st->elements[i].label) == 0)
-      )
+        (label_len < 0 && strcmp(label, st->elements[i].label) == 0))
     {
       return st->elements[i].address;
     }

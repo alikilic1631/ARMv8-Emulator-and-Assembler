@@ -18,6 +18,8 @@ char *branching[] = {"b", "br", "b.eq", "b.ne", "b.ge", "b.lt", "b.gt", "b.le", 
 char *sdts[] = {"str", "ldr", NULL};
 char *directives[] = {".int", NULL};
 char *conditional[] = {"csel", "cset", "csetm", "csinc", "csinv", "csneg", NULL};
+char *simd_fps[] = {"fmov", "fabs", "fneg", "fmin", "fmax", "fmul", "fdiv", "fadd", "fsub", "fnmul",
+                    "fcmp", "fcvtzs", "scvtf", NULL};
 
 static bool instruction_type(const char *instr, char **array)
 {
@@ -257,6 +259,10 @@ static void parse_instruction(FILE *output_file, symbol_table_t st, char *line, 
   else if (instruction_type(opcode, directives))
   {
     binary_instruction = encode_directives(st, opcode, operands);
+  }
+  else if (instruction_type(opcode, simd_fps))
+  {
+    binary_instruction = encode_simd_fp(st, opcode, operands);
   }
   else
   {

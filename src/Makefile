@@ -10,7 +10,7 @@ CFLAGS  ?= -std=c17 -g\
 all: assemble emulate
 
 assemble: assemble.o assembler.o symbol_table.o parse_utils.o asm_encode.o
-emulate: emulate.o emulator.o instr_dpimm.o instr_dpreg.o instr_sdt.o instr_branch.o instr_cond.o
+emulate: emulate.o emulator.o instr_dpimm.o instr_dpreg.o instr_sdt.o instr_branch.o instr_cond.o instr_simd_fp.o
 
 clean:
 	$(RM) *.o assemble emulate

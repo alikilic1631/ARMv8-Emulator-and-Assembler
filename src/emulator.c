@@ -6,6 +6,7 @@
 #include "instr_sdt.h"
 #include "instr_branch.h"
 #include "instr_cond.h"
+#include "instr_simd_fp.h"
 
 #define NELEMENTS(arr) (sizeof(arr) / sizeof(*arr))
 #define MEMORY_BLOCKS 4
@@ -31,6 +32,10 @@ emulstate emulstate_init()
   for (int i = 0; i <= GENERAL_REGS; i++)
   {
     state->regs[i] = 0;
+  }
+  for (int i = 0; i < SIMD_REGS; i++)
+  {
+    state->simd_regs[i] = 0;
   }
   for (int i = 0; i < MAX_MEMORY; i++)
   {
@@ -134,6 +139,12 @@ bool emulstep(emulstate state)
       unknown_instr(state, instr);
     // Branch instructions update PC directly
     break;
+  case 0x7:
+  case 0xf: // SIMD and Floating Point
+    if (!exec_simd_fp_instr(state, instr))
+      unknown_instr(state, instr);
+    state->pc += INSTR_SIZE;
+    break;
   default:
     unknown_instr(state, instr);
   }
@@ -172,6 +183,55 @@ ullong get_reg(emulstate state, bool sf, byte rg)
     exit(1);
   }
   return sf_checker(state->regs[(int)rg], sf);
+}
+
+void set_simd_reg(emulstate state, byte rg, byte ftype, double value)
+{
+  if (rg > SIMD_REGS)
+  {
+    fprintf(stderr, "Error: Out of bounds SIMD register number %d\n", rg);
+    exit(1);
+  }
+  ullong *ptr = (ullong *)(&value);
+  switch (ftype)
+  {
+  case F32:
+  {
+    float *fptr = (float *)ptr;
+    *fptr = (float)value;
+    *ptr &= SF_MASK;
+    break;
+  }
+  case F64:
+    break;
+  default:
+    fprintf(stderr, "Error: Unsupported SIMD ftype %d\n", ftype);
+    exit(1);
+  }
+  state->simd_regs[(int)rg] = value;
+}
+
+double get_simd_reg(emulstate state, byte rg, byte ftype)
+{
+  if (rg > SIMD_REGS)
+  {
+    fprintf(stderr, "Error: Out of bounds SIMD register number %d\n", rg);
+    exit(1);
+  }
+  double value = state->simd_regs[(int)rg];
+  ullong *ptr = (ullong *)(&value);
+  switch (ftype)
+  {
+  case F32:
+    *ptr &= SF_MASK;
+    float *val = (float *)ptr;
+    return *val;
+  case F64:
+    return value;
+  default:
+    fprintf(stderr, "Error: Unsupported SIMD ftype %d\n", ftype);
+    exit(1);
+  }
 }
 
 ullong load_mem(emulstate state, bool sf, ulong address)
